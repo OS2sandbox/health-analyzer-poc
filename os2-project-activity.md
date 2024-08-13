@@ -5,6 +5,8 @@ Read more about how to improve this page with shields.io
 
 [Badges]: # (Badges are rendered with shields.io)
 
+## os2_governance_report_tempålate:
+
 ![GitHub Release](https://img.shields.io/github/v/release/os2offdig/governance_report_template?style=for-the-badge&logo=github&color=darkgreen) ![GitHub Release Date](https://img.shields.io/github/release-date/os2offdig/governance_report_template?display_date=published_at&style=for-the-badge)
 
 
@@ -13,8 +15,6 @@ Read more about how to improve this page with shields.io
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3Aos2offdig%2Fgovernance_report_template%20interactions%3A%3E0%20is%3Aopen%20is%3Aissue&style=for-the-badge&logo=github&label=Open%20active%20issues)
 
 ## os2compliance:
-
-[Badges]: # (Badges are rendered with shields.io)
 
 ![GitHub Release](https://img.shields.io/github/v/release/os2compliance/os2compliance?style=for-the-badge&logo=github&color=darkgreen) ![GitHub Release Date](https://img.shields.io/github/release-date/os2compliance/os2compliance?display_date=published_at&style=for-the-badge) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/os2compliance/os2compliance/build-and-push.yml?style=for-the-badge&logo=docker&label=Container%20build) 
 
