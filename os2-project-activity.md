@@ -1,5 +1,6 @@
 ## OS2 projects
 *Activity status for a selected range of os2products*
+
 Read more about how to improve this page with shields.io
 
 [Badges]: # (Badges are rendered with shields.io)
