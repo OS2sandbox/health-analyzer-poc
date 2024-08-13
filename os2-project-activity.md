@@ -5,7 +5,7 @@ Read more about how to improve this page with shields.io
 
 [Badges]: # (Badges are rendered with shields.io)
 
-## os2_governance_report_tempålate:
+## os2_governance_report_template:
 
 ![GitHub Release](https://img.shields.io/github/v/release/os2offdig/governance_report_template?style=for-the-badge&logo=github&color=darkgreen) ![GitHub Release Date](https://img.shields.io/github/release-date/os2offdig/governance_report_template?display_date=published_at&style=for-the-badge)
 
