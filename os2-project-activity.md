@@ -22,7 +22,7 @@ Read more about how to improve this page with shields.io
 [![Contributors](https://img.shields.io/github/contributors/OS2mo/os2mo?style=for-the-badge&logo=github)](https://github.com/OS2mo/os2mo/graphs/contributors)
 ![GitHub last commit](https://img.shields.io/github/last-commit/OS2mo/os2mo?style=for-the-badge&logo=github)
 ![GitHub commit activity past month](https://img.shields.io/github/commit-activity/m/OS2mo/os2mo?style=for-the-badge&logo=github)
-![GitHub commit activity past year](https://img.shields.io/github/commit-activity/y/:OS2mo/os2mo?style=for-the-badge&logo=github)
+![GitHub commit activity past year](https://img.shields.io/github/commit-activity/y/OS2mo/os2mo?style=for-the-badge&logo=github)
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3Aos2mo%2Fos2mo%20interactions%3A%3E0%20is%3Aopen%20is%3Aissue&style=for-the-badge&logo=github&label=Open%20active%20issues)
 
 
