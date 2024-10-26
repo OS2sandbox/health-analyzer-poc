@@ -19,8 +19,10 @@ Read more about how to improve this page with shields.io
 ![GitHub Release](https://img.shields.io/github/v/release/OS2mo/os2mo?style=for-the-badge&logo=github&color=darkgreen) ![GitHub Release Date](https://img.shields.io/github/release-date/OS2mo/os2mo?display_date=published_at&style=for-the-badge) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/OS2mo/os2mo/build-and-push.yml?style=for-the-badge&logo=docker&label=Container%20build) 
 
 
-[![Contributors](https://img.shields.io/github/contributors/OS2mo/os2mo?style=for-the-badge&logo=github)](https://github.com/OS2mo/os2mo/graphs/contributors) ![GitHub last commit](https://img.shields.io/github/last-commit/OS2mo/os2mo?style=for-the-badge&logo=github)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/OS2mo/os2mo?style=for-the-badge&logo=github)
+![Contributors](https://img.shields.io/github/contributors/OS2mo/os2mo?style=for-the-badge&logo=github)](https://github.com/OS2mo/os2mo/graphs/contributors)
+![GitHub last commit](https://img.shields.io/github/last-commit/OS2mo/os2mo?style=for-the-badge&logo=github)
+![GitHub commit activity past month](https://img.shields.io/github/commit-activity/m/OS2mo/os2mo?style=for-the-badge&logo=github)
+![GitHub commit activity past year](https://img.shields.io/github/commit-activity/y/:user/https%3A%2F%2Fgithub.com%2FOS2mo%2Fos2mo?style=for-the-badge&logo=github)
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3Aos2mo%2Fos2mo%20interactions%3A%3E0%20is%3Aopen%20is%3Aissue&style=for-the-badge&logo=github&label=Open%20active%20issues)
 
 
