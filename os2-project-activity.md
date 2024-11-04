@@ -32,8 +32,10 @@ Read more about how to improve this page with shields.io
 
 
 
-[![Contributors](https://img.shields.io/github/contributors/os2compliance/os2compliance?style=for-the-badge&logo=github)](https://github.com/os2compliance/os2compliance/graphs/contributors) ![GitHub last commit](https://img.shields.io/github/last-commit/os2compliance/os2compliance?style=for-the-badge&logo=github)
+[![Contributors](https://img.shields.io/github/contributors/os2compliance/os2compliance?style=for-the-badge&logo=github)](https://github.com/os2compliance/os2compliance/graphs/contributors)
+![GitHub last commit](https://img.shields.io/github/last-commit/os2compliance/os2compliance?style=for-the-badge&logo=github)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/os2compliance/os2compliance?style=for-the-badge&logo=github)
+![GitHub commit activity past year](https://img.shields.io/github/commit-activity/y/OS2compliance/os2compliance?style=for-the-badge&logo=github)
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3Aos2compliance%2Fos2compliance%20interactions%3A%3E0%20is%3Aopen%20is%3Aissue&style=for-the-badge&logo=github&label=Open%20active%20issues)
 
 ## os2sofd
@@ -43,6 +45,7 @@ Read more about how to improve this page with shields.io
 
 [![Contributors](https://img.shields.io/github/contributors/os2sofd/os2sofd?style=for-the-badge&logo=github)](https://github.com/os2sofd/os2sofd/graphs/contributors) ![GitHub last commit](https://img.shields.io/github/last-commit/os2sofd/os2sofd?style=for-the-badge&logo=github)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/os2sofd/os2sofd?style=for-the-badge&logo=github)
+![GitHub commit activity past year](https://img.shields.io/github/commit-activity/y/OS2sofd/os2sofd?style=for-the-badge&logo=github)
 ![GitHub issue custom search](https://img.shields.io/github/issues-search?query=repo%3Aos2sofd%2Fos2sofd%20interactions%3A%3E0%20is%3Aopen%20is%3Aissue&style=for-the-badge&logo=github&label=Open%20active%20issues)
 
 ## OS2borgerpc-scripts
