@@ -10,9 +10,6 @@ Provide a repository-centric, modern and automated approach to evaluating softwa
 - GitHub API Token
 - TBD
   
-### Installation
-TBD
-
 ## 🤝 Contributing
 Contributions welcome! `CONTRIBUTING.md` TBD
 
