@@ -5,6 +5,7 @@
 Provide a repository-centric, modern and automated approach to evaluating software project quality and health through data-driven metrics.
 
 ## 🗺️ Roadmap
+*To get more details go to the [Milestones](https://github.com/OS2sandbox/project-health-analyzer/milestones?direction=asc&sort=due_date&state=open) overview*
 
 ```mermaid
 gantt
@@ -20,6 +21,7 @@ gantt
     section Phase 2
     Demo 🎉 : demo, after poc, 5d
 ```
+
 
 ## 🚦 Getting Started
 
