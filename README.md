@@ -4,6 +4,23 @@
 ## 🎯 Purpose
 Provide a repository-centric, modern and automated approach to evaluating software project quality and health through data-driven metrics.
 
+## 🗺️ Roadmap
+
+```mermaid
+gantt
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %Y
+
+    section Phase 0
+    Project Setup 🚀 :active, setup, 2025-01-14, 31d
+
+    section Phase 1
+    Proof of Concept (PoC) 💡 : poc, after setup, 62d
+
+    section Phase 2
+    Demo 🎉 : demo, after poc, 5d
+```
+
 ## 🚦 Getting Started
 
 ### Prerequisites
