@@ -8,15 +8,15 @@ The goal is to provide **data-driven insights** for stakeholders such as maintai
 
 ## ⚙️ How It Works
 
-The analyzer supports two operational modes:
+The analyzer can be built to support two seperate operational modes:
 
 ### 1. **Full-Stack Mode**
-- Leverages selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsa [8knot](https://8knot.ioles **continuous monitoring** of repositories.
+- Leverages selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsa) and [8knot](https://eightknot.osci.io/chaoss) for **continuous monitoring** of repositories.
 - ⚠️ Requires infrastructure setup (e.g., persistent storage, dashboard hosting).
 
 ### 2. **Ephemeral Mode**
 - Runs as a **containerized job** (e.g., via GitHub Actions or CI/CD pipelines).
-- Pulls data from the **GitHub API** and generates a **report** (Markdown or HTML).
+- Pulls data from the **Forge (e.g. github API) API** and generates a **report** (Markdown or HTML).
 - Ideal for **on-demand evaluations** with **zero infrastructure overhead**.
 - Cold be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api--
 
