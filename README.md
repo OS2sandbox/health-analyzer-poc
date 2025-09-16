@@ -51,3 +51,15 @@ The analyzer can be built to support two seperate operational modes:
   - [GitHub Actions](https://docs.github.com/en/actions) – automation for ephemeral mode.
   - [GitLab CI/CD](https://docs.gitlab.com/ci/) – pipelines for GitLab-hosted projects.
   - [Forgejo Runners](https://forgejo.org/docs/latest/admin/actions/runner-installation/) – self-hosted runners for Forgejo instances.
+  - 
+## 🤝 Contributing
+
+We welcome ideas, feedback, and suggestions!
+
+If you’d like to contribute, please use the [Issue Tracker](https://github.com/OS2sandbox/health-analyzer-poc/issues) to:
+- Suggest new metrics or features
+- Share use cases or integration ideas
+- Discuss ideas for implementations and code.
+> 📝 You’ll need a **GitHub account** to create or comment on issues.
+
+We’re especially interested in contributions that help make open source reuse safer and more transparent for non-technical stakeholders.
