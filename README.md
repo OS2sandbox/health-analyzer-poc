@@ -1,4 +1,4 @@
-# 🚀 Project Health Analyzer
+# 🚀 Health Analyzer poc
 *A comprehensive toolkit for assessing the health, security, and vitality of software projects on GitHub.*
 
 ## 🎯 Purpose
