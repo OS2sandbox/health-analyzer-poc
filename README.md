@@ -1,10 +1,20 @@
 # 🚀 Health Analyzer PoC
+> Reducing Risk in Open Source Adoption
 
 ## 🧭 Purpose
-A **proof-of-concept** for evaluating the **health, sustainability, and reusability** of software projects hosted in Git repositories.  
-The goal is to provide **data-driven insights** for stakeholders such as maintainers, contributors, and decision-makers.
+_The health-analyzer-poc is a **proof-of-concept** for evaluating the **health, sustainability, and reusability** of software projects hosted in Git repositories._
+_The goal is to provide **data-driven insights** for stakeholders such as maintainers, contributors, and decision-makers._
 
----
+```mermaid
+flowchart LR
+  classDef card fill:#f9f9f9,stroke:#bbb,stroke-width:1px,color:#333,rx:6,ry:6
+
+  H["🧠 Project Health<br><br>Is the project alive and active?<br>Track contributor activity, issue responsiveness, and release cadence to avoid dead or stagnant code."]~~~
+  S["🌱 Sustainability<br><br>Will the project survive long-term?<br>Detect risks like abandonment, low bus factor, and missing governance to ensure continuity."]~~~
+  R["🔁 Reusability<br><br>Can we safely build on this?<br>Assess documentation, modularity, and test coverage to support confident reuse."]
+
+  class H,S,R card
+```
 
 ## ⚙️ How It Works
 
