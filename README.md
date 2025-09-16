@@ -12,18 +12,20 @@ The analyzer can be built to support two seperate operational modes:
 
 ### 1. **Full-Stack Mode**
 - Leverages selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsa) and [8knot](https://eightknot.osci.io/chaoss) for **continuous monitoring** of repositories.
-- ⚠️ Requires infrastructure setup (e.g., persistent storage, dashboard hosting).
+- Traditional "Dashboarding" approach with persistent database backend.
+- ⚠️ Requires a larger infrastructure setup (e.g., persistent storage, dashboard hosting) and cost.
 
 ### 2. **Ephemeral Mode**
 - Runs as a **containerized job** (e.g., via GitHub Actions or CI/CD pipelines).
 - Pulls data from the **Forge (e.g. github API) API** and generates a **report** (Markdown or HTML).
 - Ideal for **on-demand evaluations** with **zero infrastructure overhead**.
-- Cold be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api--
-
+- Cold be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api-4058)
+  
 ## 📦 Outputs
 - **Health Reports**: Markdown/HTML summaries of key metrics.
-- **Badges**: Optional visual indicators for embedding in READMEs.
+- **Badges**: Optional visual indicators for embedding in READMEs in forges.
 - **Dashboards**: (Full-stack mode only) Interactive views of project trends.
+- **Search and rating** of software solutions across forges.
 
 ---
 
