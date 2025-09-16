@@ -1,40 +1,41 @@
-# 🚀 Health Analyzer poc
-*A comprehensive toolkit for assessing the health, security, and vitality of software projects on GitHub.*
+# 🚀 Health Analyzer PoC
 
-## 🎯 Purpose
-Provide a repository-centric, modern and automated approach to evaluating software project quality and health through data-driven metrics.
+## 🧭 Purpose
+A **proof-of-concept** for evaluating the **health, sustainability, and reusability** of software projects hosted in Git repositories.  
+The goal is to provide **data-driven insights** for stakeholders such as maintainers, contributors, and decision-makers.
 
-## 🗺️ Roadmap
-*To get more details go to the [Milestones](https://github.com/OS2sandbox/project-health-analyzer/milestones?direction=asc&sort=due_date&state=open) overview*
+---
 
-```mermaid
-gantt
-    dateFormat  YYYY-MM-DD
-    axisFormat  %b %Y
+## ⚙️ How It Works
 
-    section Phase 0
-    Project Setup 🚀 :active, setup, 2025-01-14, 31d
+The analyzer supports two operational modes:
 
-    section Phase 1
-    Proof of Concept (PoC) 💡 : poc, after setup, 62d
+### 1. **Full-Stack Mode**
+- Leverages selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsa [8knot](https://8knot.ioles **continuous monitoring** of repositories.
+- ⚠️ Requires infrastructure setup (e.g., persistent storage, dashboard hosting).
 
-    section Phase 2
-    Demo 🎉 : demo, after poc, 5d
-```
+### 2. **Ephemeral Mode**
+- Runs as a **containerized job** (e.g., via GitHub Actions or CI/CD pipelines).
+- Pulls data from the **GitHub API** and generates a **report** (Markdown or HTML).
+- Ideal for **on-demand evaluations** with **zero infrastructure overhead**.
+- Cold be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api--
 
+## 📦 Outputs
+- **Health Reports**: Markdown/HTML summaries of key metrics.
+- **Badges**: Optional visual indicators for embedding in READMEs.
+- **Dashboards**: (Full-stack mode only) Interactive views of project trends.
 
-## 🚦 Getting Started
+---
 
-### Prerequisites
-- GitHub API Token
-- TBD
-  
-## 🤝 Contributing
-Contributions welcome! `CONTRIBUTING.md` TBD
-
-## 📄 License
-TBD
-
-## 🌟 Acknowledgements
-- GitHub API
-- OpenSSF Scorecard
+## 🛠️ Technologies Used
+- [GitHub API](https://docs.github.com/en/rest) – for retrieving repository data.
+- [GitLab API](https://docs.gitlab.com/api/rest/) – for interacting with GitLab-hosted repositories.
+- [Forgejo API](https://forgejo.org/docs/latest/user/api-usage/) – for accessing Forgejo repository data.
+- [CHAOSS metrics](https://chaoss.community/) – for assessing open source community health.
+- [8knot](https://eightknot.osci.io/) – dashboard tool for visualizing CHAOSS metrics.
+- [Kubernetes](https://kubernetes.io/) – for production setup of containerized workloads.
+- Containerized development setup - [Podman](https://podman.io/) – daemonless, rootless container engine.
+- CI/CD platforms:
+  - [GitHub Actions](https://docs.github.com/en/actions) – automation for ephemeral mode.
+  - [GitLab CI/CD](https://docs.gitlab.com/ci/) – pipelines for GitLab-hosted projects.
+  - [Forgejo Runners](https://forgejo.org/docs/latest/admin/actions/runner-installation/) – self-hosted runners for Forgejo instances.
