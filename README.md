@@ -54,7 +54,7 @@ The analyzer can be built to support two separate operational modes:
   - CHAOSS metrics – for assessing open source community health.
   - [8knot](https://eightl for visualizing CHAOSS metrics.
   - [Evidence](https://github.com/e
-  - 
+    
 ## 🤝 Contributing
 
 We welcome ideas, feedback, and suggestions!
