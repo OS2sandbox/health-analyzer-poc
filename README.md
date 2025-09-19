@@ -9,9 +9,9 @@ _The goal is to provide **data-driven insights** for stakeholders such as mainta
 flowchart LR
   classDef card fill:#f9f9f9,stroke:#bbb,stroke-width:1px,color:#333,rx:6,ry:6
 
-  H["🧠 Project Health<br><br>Is the project alive and active?<br>Track contributor activity, issue responsiveness, and release cadence to avoid dead or stagnant code."]~~~
-  S["🌱 Sustainability<br><br>Will the project survive long-term?<br>Detect risks like abandonment, low bus factor, and missing governance to ensure continuity."]~~~
-  R["🔁 Reusability<br><br>Can we safely build on this?<br>Assess documentation, modularity, and test coverage to support confident reuse."]
+  H["🧠 **Project Health**<br><br>Is the project alive <br> and active?"]~~~
+  S["🌱 **Sustainability** <br><br>Will the project <br> survive long-term?"]~~~
+  R["🔁 **Reusability** <br><br>Can we safely build <br> on this?"]
 
   class H,S,R card
 ```
