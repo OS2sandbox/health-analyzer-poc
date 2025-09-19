@@ -15,42 +15,45 @@ flowchart LR
 
   class H,S,R card
 ```
+## 🛤️ Two Ways to build and run the Health Analyzer PoC
 
-## ⚙️ How It Works
+The analyzer can be built to support two separate operational modes:
 
-The analyzer can be built to support two seperate operational modes:
+### 1. **Full-Stack**
+- 📈 **Continuous monitoring** using selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsach with a persistent database backend.
+- 🛠️ Requires infrastructure setup (e.g., storage, hosting) and ongoing maintenance.
+- ✅ Suitable for long-term observability and trend analysis.
 
-### 1. **Full-Stack Mode**
-- Leverages selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsa) and [8knot](https://eightknot.osci.io/chaoss) for **continuous monitoring** of repositories.
-- Traditional "Dashboarding" approach with persistent database backend.
-- ⚠️ Requires a larger infrastructure setup (e.g., persistent storage, dashboard hosting) and cost.
+### 2. **Serverless BI**
+- 📊 **Business insights without infrastructure** – reports are generated on-demand using automated workflows (e.g., GitHub Actions), with no servers to manage.
+- 🔄 **Live data, reproducible results** – pulls fresh data from APIs like GitHub and transforms it into clear, shareable reports (Markdown or HTML).
+- 🧠 **BI as code** – analytics are version-controlled, transparent, and embedded directly in your project repository.
+- ⚡ **Fast, lightweight, and auditable** – ideal for evaluations where speed, traceability, and zero operational overhead are key.
+- 🏅 **Standards-ready** – can be extended to support [OpenCode Badges](https://opencode.de/deorting.
 
-### 2. **Ephemeral Mode**
-- Runs as a **containerized job** (e.g., via GitHub Actions or CI/CD pipelines).
-- Pulls data from the **Forge (e.g. github API) API** and generates a **report** (Markdown or HTML).
-- Ideal for **on-demand evaluations** with **zero infrastructure overhead**.
-- Could be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api-4058)
-  
-## 📦 Outputs
-- **Health Reports**: Markdown/HTML summaries of key metrics.
-- **Badges**: Optional visual indicators for embedding in READMEs in forges.
-- **Dashboards**: (Full-stack mode only) Interactive views of project trends.
-- **Search and rating** of software solutions across forges.
 
 ---
 
-## 🛠️ Technologies Used
-- [GitHub API](https://docs.github.com/en/rest) – for retrieving repository data.
-- [GitLab API](https://docs.gitlab.com/api/rest/) – for interacting with GitLab-hosted repositories.
-- [Forgejo API](https://forgejo.org/docs/latest/user/api-usage/) – for accessing Forgejo repository data.
-- [CHAOSS metrics](https://chaoss.community/) – for assessing open source community health.
-- [8knot](https://eightknot.osci.io/) – dashboard tool for visualizing CHAOSS metrics.
-- [Kubernetes](https://kubernetes.io/) – for production setup of containerized workloads.
-- Containerized development setup - [Podman](https://podman.io/) – daemonless, rootless container engine.
-- CI/CD platforms:
-  - [GitHub Actions](https://docs.github.com/en/actions) – automation for ephemeral mode.
-  - [GitLab CI/CD](https://docs.gitlab.com/ci/) – pipelines for GitLab-hosted projects.
-  - [Forgejo Runners](https://forgejo.org/docs/latest/admin/actions/runner-installation/) – self-hosted runners for Forgejo instances.
+## 📦 Outputs
+
+- 📄 **Health Reports** – Markdown/HTML summaries of key metrics.
+- 🏷️ **Badges** – Optional visual indicators for embedding in READMEs in forges.
+- 📊 **Dashboards** – (Full-stack mode only) Interactive views of project trends.
+- 🔍 **Search and rating** – of software solutions across forges.
+
+---
+
+## 🛠️ Technology recommendations
+
+- **APIs**
+  - [GitHub API](https://docs.github.com/en/rest) – for retrieving repository data.
+  - GitLab API – for interacting with GitLab-hosted repositories.
+  - [Forgejo API](https://forgejo.org/docs/latesty data.
+
+- **Metrics & Visualization**
+  - CHAOSS metrics – for assessing open source community health.
+  - [8knot](https://eightl for visualizing CHAOSS metrics.
+  - [Evidence](https://github.com/e
   - 
 ## 🤝 Contributing
 
