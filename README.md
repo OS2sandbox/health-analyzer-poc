@@ -29,7 +29,7 @@ The analyzer can be built to support two seperate operational modes:
 - Runs as a **containerized job** (e.g., via GitHub Actions or CI/CD pipelines).
 - Pulls data from the **Forge (e.g. github API) API** and generates a **report** (Markdown or HTML).
 - Ideal for **on-demand evaluations** with **zero infrastructure overhead**.
-- Cold be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api-4058)
+- Could be built to be interoperable with [OpenCode Badges](https://opencode.de/de/software/badge-api-4058)
   
 ## 📦 Outputs
 - **Health Reports**: Markdown/HTML summaries of key metrics.
