@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class Configuration:
     def __init__(self, config_file: Optional[str] = None):
         # Get config file path from environment variable or use default
-        self.config_file: str = config_file or os.environ.get('CONFIG_FILE', 'config.yaml')
+        self.config_file: str = config_file or os.environ.get('CONFIG_FILE', 'config/config.yaml')
         
         # Initialize default values
         self.owner: Optional[str] = None
