@@ -81,6 +81,8 @@ To use a token file:
 
 ## Running the Program
 
+### Running with Python
+
 1. Set your GitHub token as an environment variable:
    ```bash
    export GITHUB_TOKEN=your_github_token_here
@@ -107,6 +109,51 @@ To use a token file:
    export REPO_OWNER=your_owner
    export REPO_NAME=your_repo
    python src/metrics_check.py
+   ```
+
+### Running with Docker
+
+You can run the application using the pre-built Docker image:
+
+1. Pull the image:
+   ```bash
+   docker pull codeberg.org/0xf1e/project-health-analyzer:latest
+   ```
+
+2. Run the container with your GitHub token:
+   ```bash
+   docker run --rm \
+     -e GITHUB_TOKEN=your_github_token_here \
+     -v $(pwd)/output:/app/output \
+     codeberg.org/0xf1e/project-health-analyzer:latest
+   ```
+
+3. To use a token file:
+   ```bash
+   docker run --rm \
+     -e GITHUB_TOKEN_FILE=/app/token.txt \
+     -v /path/to/your/token/file:/app/token.txt \
+     -v $(pwd)/output:/app/output \
+     codeberg.org/0xf1e/project-health-analyzer:latest
+   ```
+
+4. To use a custom configuration file:
+   ```bash
+   docker run --rm \
+     -e GITHUB_TOKEN=your_github_token_here \
+     -v /path/to/your/config.yaml:/app/config/config.yaml \
+     -v $(pwd)/output:/app/output \
+     codeberg.org/0xf1e/project-health-analyzer:latest
+   ```
+
+5. To override repository owner/name:
+   ```bash
+   docker run --rm \
+     -e GITHUB_TOKEN=your_github_token_here \
+     -e REPO_OWNER=your_owner \
+     -e REPO_NAME=your_repo \
+     -v $(pwd)/output:/app/output \
+     codeberg.org/0xf1e/project-health-analyzer:latest
    ```
 
 ## Output Files
