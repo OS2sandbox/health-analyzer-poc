@@ -4,17 +4,17 @@ This project collects various metrics from GitHub repositories using the GitHub 
 
 ## Features
 
-- Collects root markdown files
+- Collects information on markdown files at repository root (e.g. README.md, LICENSE.md)
 - Retrieves repository license information
-- Gathers release information with timestamps
+- Gathers list of releases, with timestamps
 - Tracks contributors and their most recent contribution dates
 - Collects commit history
 - Records issue information including creators and status
 
 ## Prerequisites
 
-- Python 3.7+
-- A GitHub personal access token with appropriate permissions
+- Python 3
+- A GitHub personal access token with appropriate repository read permissions
 
 ## Installation
 
