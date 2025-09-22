@@ -62,9 +62,12 @@ request_timeout: 30       # API request timeout in seconds
 You can override configuration values using environment variables:
 
 - `GITHUB_TOKEN`: (Required) Your GitHub personal access token
+- `GITHUB_TOKEN_FILE`: (Alternative to `GITHUB_TOKEN`) Path to a file containing your GitHub personal access token
 - `CONFIG_FILE`: Path to custom configuration file (optional)
 - `REPO_OWNER`: Override repository owner from config
 - `REPO_NAME`: Override repository name from config
+
+Note: You must provide either `GITHUB_TOKEN` or `GITHUB_TOKEN_FILE`, but not both.
 
 To create a GitHub personal access token:
 
@@ -72,11 +75,20 @@ To create a GitHub personal access token:
 2. Generate a new token with repo scope
 3. Copy the token for use with this application
 
+To use a token file:
+1. Create a file containing only your GitHub token (no extra characters or newlines)
+2. Set the `GITHUB_TOKEN_FILE` environment variable to the path of this file
+
 ## Running the Program
 
 1. Set your GitHub token as an environment variable:
    ```bash
    export GITHUB_TOKEN=your_github_token_here
+   ```
+   
+   OR set the path to a token file:
+   ```bash
+   export GITHUB_TOKEN_FILE=/path/to/your/token/file
    ```
 
 2. Run the metrics collection script:

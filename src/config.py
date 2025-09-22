@@ -36,7 +36,42 @@ class Configuration:
         # Override with environment variables if set
         self.owner = os.environ.get('REPO_OWNER') or self.owner
         self.repo_name = os.environ.get('REPO_NAME') or self.repo_name
-        self.github_token = os.environ.get('GITHUB_TOKEN') or self.github_token
+        self.github_token = self._get_github_token()
+    
+    def _get_github_token(self) -> Optional[str]:
+        """Get GitHub token from environment variables or config file"""
+        github_token = self.github_token  # From config file
+        
+        # Check for GITHUB_TOKEN environment variable
+        env_token = os.environ.get('GITHUB_TOKEN')
+        
+        # Check for GITHUB_TOKEN_FILE environment variable
+        token_file_path = os.environ.get('GITHUB_TOKEN_FILE')
+        
+        # Validate that only one token source is used
+        if env_token and token_file_path:
+            logger.error("Both GITHUB_TOKEN and GITHUB_TOKEN_FILE environment variables are set. Please use only one.")
+            sys.exit(1)
+        
+        # Priority: GITHUB_TOKEN env var > GITHUB_TOKEN_FILE env var > config file
+        if env_token:
+            return env_token
+        elif token_file_path:
+            try:
+                with open(token_file_path, 'r') as f:
+                    token = f.read().strip()
+                    if not token:
+                        logger.error(f"Token file {token_file_path} is empty.")
+                        sys.exit(1)
+                    return token
+            except FileNotFoundError:
+                logger.error(f"Token file {token_file_path} not found.")
+                sys.exit(1)
+            except Exception as e:
+                logger.error(f"Error reading token file {token_file_path}: {e}")
+                sys.exit(1)
+        
+        return github_token
     
     def _load_config(self, config_file: str) -> None:
         """Load configuration from YAML file"""
