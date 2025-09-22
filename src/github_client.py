@@ -14,8 +14,8 @@ class GitHubClient:
     def __init__(self, config: Configuration):
         self.config = config
         
-        # Check if required environment variables are set
-        self.github_token = os.environ.get('GITHUB_TOKEN')
+        # Check if GitHub token is set in config (from env var or config file)
+        self.github_token = self.config.github_token
         
         if not self.github_token:
             logger.error("Please set GITHUB_TOKEN environment variable.")
