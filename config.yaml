@@ -3,7 +3,7 @@ repo:
   name: "duckdb-wasm"
 
 output:
-  directory: "."
+  directory: "output"
   root_md_files: "root_md_files.jsonl"
   license: "license.jsonl"
   releases: "releases.jsonl"
