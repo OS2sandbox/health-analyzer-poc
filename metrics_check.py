@@ -5,7 +5,7 @@ import sys
 import json
 import requests
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable, Tuple
 
 # Check if required environment variables are set
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
@@ -160,6 +160,42 @@ def run_query(query: str, variables: Dict = {}) -> Optional[Dict[Any, Any]]:
         print(f"Query failed with exception: {e}")
         return None
 
+def paginate_github_query(
+    query: str, 
+    extract_function: Callable[[Dict], Tuple[List[Any], Optional[Dict]]], 
+    initial_variables: Optional[Dict] = None
+) -> List[Any]:
+    """Generic pagination function for GitHub GraphQL API"""
+    if initial_variables is None:
+        initial_variables = {}
+        
+    all_data = []
+    has_next_page = True
+    cursor = None
+    variables = initial_variables.copy()
+    
+    while has_next_page:
+        if cursor:
+            variables['cursor'] = cursor
+        else:
+            # Remove cursor from variables if it's None
+            variables.pop('cursor', None)
+            
+        result = run_query(query, variables)
+        
+        if not result:
+            break
+            
+        data_batch, page_info = extract_function(result)
+        all_data.extend(data_batch)
+        
+        if page_info and page_info.get('hasNextPage'):
+            cursor = page_info.get('endCursor')
+        else:
+            has_next_page = False
+    
+    return all_data
+
 def write_root_md_files(md_files: List[str]) -> None:
     """Write the .md files in the root folder as JSONL"""
     with open('root_md_files.jsonl', 'w') as f:
@@ -221,153 +257,132 @@ def check_license(owner: str, repo_name: str) -> str:
 
 def check_releases(owner: str, repo_name: str) -> List[Dict[str, str]]:
     """Check and return all releases with timestamps from the past year"""
-    releases = []
-    has_next_page = True
-    cursor = None
-    
-    while has_next_page:
-        query = RELEASES_QUERY % (owner, repo_name)
-        variables = {}
-        if cursor:
-            variables['cursor'] = cursor
-            
-        result = run_query(query, variables)
+    def extract_releases(result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
+        releases = []
+        page_info = None
         
-        if result and 'data' in result and result['data']['repository']['releases']:
-            release_edges = result['data']['repository']['releases']['edges']
-            
-            # Filter releases from the past year
-            for edge in release_edges:
-                published_at = edge['node']['publishedAt']
-                if published_at and published_at >= one_year_ago:
-                    releases.append({
-                        'name': edge['node']['name'] or 'Unnamed release',
-                        'publishedAt': published_at
-                    })
-                elif published_at and published_at < one_year_ago:
-                    # Stop if we've gone past the one-year boundary
-                    has_next_page = False
-                    break
-            
-            # Check pagination info
-            page_info = result['data']['repository']['releases']['pageInfo']
-            has_next_page = page_info['hasNextPage'] and has_next_page
-            cursor = page_info['endCursor']
-        else:
-            has_next_page = False
+        if 'data' in result and result['data']['repository']:
+            repo_data = result['data']['repository']
+            if repo_data.get('releases'):
+                release_edges = repo_data['releases']['edges']
+                page_info = repo_data['releases']['pageInfo']
+                
+                # Filter releases from the past year
+                for edge in release_edges:
+                    published_at = edge['node']['publishedAt']
+                    if published_at and published_at >= one_year_ago:
+                        releases.append({
+                            'name': edge['node']['name'] or 'Unnamed release',
+                            'publishedAt': published_at
+                        })
+                    elif published_at and published_at < one_year_ago:
+                        # Stop pagination if we've gone past the one-year boundary
+                        return releases, None
+                        
+        return releases, page_info
     
+    query = RELEASES_QUERY % (owner, repo_name)
+    releases = paginate_github_query(query, extract_releases)
     write_releases(releases)
     return releases
 
 def check_contributors(owner: str, repo_name: str) -> Dict[str, str]:
     """Check and return all contributors with their most recent contribution date from the past year"""
-    contributors: Dict[str, str] = {}
-    has_next_page = True
-    cursor = None
-    
-    while has_next_page:
-        query = CONTRIBUTORS_QUERY % (owner, repo_name)
-        variables = {'since': one_year_ago}
-        if cursor:
-            variables['cursor'] = cursor
-            
-        result = run_query(query, variables)
+    def extract_contributors(result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
+        contributors: Dict[str, str] = {}
+        page_info = None
         
-        if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
-            history = result['data']['repository']['defaultBranchRef']['target']['history']
-            commits = history['nodes']
-            
-            for commit in commits:
-                if commit['author'] and commit['author']['user']:
-                    login = commit['author']['user']['login']
-                    date = commit['committedDate']
-                    if login not in contributors or date > contributors[login]:
-                        contributors[login] = date
-            
-            # Check pagination info
-            page_info = history['pageInfo']
-            has_next_page = page_info['hasNextPage']
-            cursor = page_info['endCursor']
-        else:
-            has_next_page = False
+        if 'data' in result and result['data']['repository']:
+            repo_data = result['data']['repository']
+            if repo_data.get('defaultBranchRef') and repo_data['defaultBranchRef'].get('target'):
+                target = repo_data['defaultBranchRef']['target']
+                if target.get('history'):
+                    history = target['history']
+                    commit_nodes = history['nodes']
+                    page_info = history['pageInfo']
+                    
+                    for commit in commit_nodes:
+                        if commit.get('author') and commit['author'].get('user'):
+                            login = commit['author']['user']['login']
+                            date = commit['committedDate']
+                            if login and date:
+                                if login not in contributors or date > contributors[login]:
+                                    contributors[login] = date
+                                    
+        return [contributors], page_info
     
-    write_contributors(contributors)
-    return contributors
+    query = CONTRIBUTORS_QUERY % (owner, repo_name)
+    contributor_list = paginate_github_query(query, extract_contributors, {'since': one_year_ago})
+    
+    # Merge all contributor dictionaries
+    final_contributors: Dict[str, str] = {}
+    for contributors in contributor_list:
+        for login, date in contributors.items():
+            if login not in final_contributors or date > final_contributors[login]:
+                final_contributors[login] = date
+                
+    write_contributors(final_contributors)
+    return final_contributors
 
 def check_commits(owner: str, repo_name: str) -> List[Dict[str, str]]:
     """Check and return all commits from the past year"""
-    commits = []
-    has_next_page = True
-    cursor = None
-    
-    while has_next_page:
-        query = COMMITS_QUERY % (owner, repo_name)
-        variables = {'since': one_year_ago}
-        if cursor:
-            variables['cursor'] = cursor
-            
-        result = run_query(query, variables)
+    def extract_commits(result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
+        commits = []
+        page_info = None
         
-        if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
-            history = result['data']['repository']['defaultBranchRef']['target']['history']
-            commit_nodes = history['nodes']
-            
-            for commit in commit_nodes:
-                commits.append({
-                    'message': commit['messageHeadline'],
-                    'date': commit['committedDate'],
-                    'author': commit['author']['name'] if commit['author'] else 'Unknown'
-                })
-            
-            # Check pagination info
-            page_info = history['pageInfo']
-            has_next_page = page_info['hasNextPage']
-            cursor = page_info['endCursor']
-        else:
-            has_next_page = False
+        if 'data' in result and result['data']['repository']:
+            repo_data = result['data']['repository']
+            if repo_data.get('defaultBranchRef') and repo_data['defaultBranchRef'].get('target'):
+                target = repo_data['defaultBranchRef']['target']
+                if target.get('history'):
+                    history = target['history']
+                    commit_nodes = history['nodes']
+                    page_info = history['pageInfo']
+                    
+                    for commit in commit_nodes:
+                        commits.append({
+                            'message': commit.get('messageHeadline', ''),
+                            'date': commit.get('committedDate', ''),
+                            'author': commit.get('author', {}).get('name', 'Unknown') if commit.get('author') else 'Unknown'
+                        })
+                        
+        return commits, page_info
     
+    query = COMMITS_QUERY % (owner, repo_name)
+    commits = paginate_github_query(query, extract_commits, {'since': one_year_ago})
     write_commits(commits)
     return commits
 
 def check_issues(owner: str, repo_name: str) -> List[Dict[str, str]]:
     """Check and return all issues with creator and status from the past year"""
-    issues = []
-    has_next_page = True
-    cursor = None
-    
-    while has_next_page:
-        query = ISSUES_QUERY % (owner, repo_name)
-        variables = {}
-        if cursor:
-            variables['cursor'] = cursor
-            
-        result = run_query(query, variables)
+    def extract_issues(result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
+        issues = []
+        page_info = None
         
-        if result and 'data' in result and result['data']['repository']['issues']:
-            issue_nodes = result['data']['repository']['issues']['nodes']
-            
-            # Filter issues from the past year
-            for issue in issue_nodes:
-                created_at = issue['createdAt']
-                if created_at and created_at >= one_year_ago:
-                    issues.append({
-                        'title': issue['title'],
-                        'state': issue['state'],
-                        'author': issue['author']['login'] if issue['author'] else 'Unknown',
-                        'createdAt': created_at
-                    })
-                elif created_at and created_at < one_year_ago:
-                    # Stop if we've gone past the one-year boundary
-                    has_next_page = False
-                    break
-            
-            # Check pagination info
-            page_info = result['data']['repository']['issues']['pageInfo']
-            has_next_page = page_info['hasNextPage'] and has_next_page
-            cursor = page_info['endCursor']
-        else:
-            has_next_page = False
+        if 'data' in result and result['data']['repository']:
+            repo_data = result['data']['repository']
+            if repo_data.get('issues'):
+                issue_nodes = repo_data['issues']['nodes']
+                page_info = repo_data['issues']['pageInfo']
+                
+                # Filter issues from the past year
+                for issue in issue_nodes:
+                    created_at = issue.get('createdAt')
+                    if created_at and created_at >= one_year_ago:
+                        issues.append({
+                            'title': issue.get('title', ''),
+                            'state': issue.get('state', ''),
+                            'author': issue.get('author', {}).get('login', 'Unknown') if issue.get('author') else 'Unknown',
+                            'createdAt': created_at
+                        })
+                    elif created_at and created_at < one_year_ago:
+                        # Stop pagination if we've gone past the one-year boundary
+                        return issues, None
+                        
+        return issues, page_info
     
+    query = ISSUES_QUERY % (owner, repo_name)
+    issues = paginate_github_query(query, extract_issues)
     write_issues(issues)
     return issues
 
