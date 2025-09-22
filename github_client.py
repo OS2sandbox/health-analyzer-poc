@@ -6,11 +6,14 @@ import requests
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Any
+from config import Configuration
 
 logger = logging.getLogger(__name__)
 
 class GitHubClient:
-    def __init__(self):
+    def __init__(self, config: Configuration):
+        self.config = config
+        
         # Check if required environment variables are set
         self.github_token = os.environ.get('GITHUB_TOKEN')
         
@@ -25,12 +28,12 @@ class GitHubClient:
         }
         
         # GraphQL endpoint
-        self.url = 'https://api.github.com/graphql'
+        self.url = self.config.github_api_url
         
-        # Calculate the date for one year ago
-        self.one_year_ago = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        # Calculate the date for specified days ago
+        self.date_range_ago = (datetime.now() - timedelta(days=self.config.date_range_days)).strftime('%Y-%m-%dT%H:%M:%SZ')
         
-        # GraphQL Queries
+        # GraphQL Queries with configurable pagination limit
         self.ROOT_FILES_QUERY = '''
         {
             repository(owner: "%s", name: "%s") {
@@ -55,105 +58,110 @@ class GitHubClient:
         }
         '''
         
-        self.RELEASES_QUERY = '''
-        query($cursor: String) {
-            repository(owner: "%s", name: "%s") {
-                releases(first: 100, orderBy: {field: CREATED_AT, direction: DESC}, after: $cursor) {
-                    edges {
-                        node {
+        self.RELEASES_QUERY = f'''
+        query($cursor: String) {{
+            repository(owner: "%s", name: "%s") {{
+                releases(first: {self.config.pagination_limit}, orderBy: {{field: CREATED_AT, direction: DESC}}, after: $cursor) {{
+                    edges {{
+                        node {{
                             name
                             publishedAt
-                        }
+                        }}
                         cursor
-                    }
-                    pageInfo {
+                    }}
+                    pageInfo {{
                         hasNextPage
                         endCursor
-                    }
-                }
-            }
-        }
+                    }}
+                }}
+            }}
+        }}
         '''
         
-        self.CONTRIBUTORS_QUERY = '''
-        query($cursor: String, $since: GitTimestamp!) {
-            repository(owner: "%s", name: "%s") {
-                defaultBranchRef {
-                    target {
-                        ... on Commit {
-                            history(first: 100, since: $since, after: $cursor) {
-                                nodes {
-                                    author {
-                                        user {
+        self.CONTRIBUTORS_QUERY = f'''
+        query($cursor: String, $since: GitTimestamp!) {{
+            repository(owner: "%s", name: "%s") {{
+                defaultBranchRef {{
+                    target {{
+                        ... on Commit {{
+                            history(first: {self.config.pagination_limit}, since: $since, after: $cursor) {{
+                                nodes {{
+                                    author {{
+                                        user {{
                                             login
-                                        }
-                                    }
+                                        }}
+                                    }}
                                     committedDate
-                                }
-                                pageInfo {
+                                }}
+                                pageInfo {{
                                     hasNextPage
                                     endCursor
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                }}
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
         '''
         
-        self.COMMITS_QUERY = '''
-        query($cursor: String, $since: GitTimestamp!) {
-            repository(owner: "%s", name: "%s") {
-                defaultBranchRef {
-                    target {
-                        ... on Commit {
-                            history(first: 100, since: $since, after: $cursor) {
-                                nodes {
+        self.COMMITS_QUERY = f'''
+        query($cursor: String, $since: GitTimestamp!) {{
+            repository(owner: "%s", name: "%s") {{
+                defaultBranchRef {{
+                    target {{
+                        ... on Commit {{
+                            history(first: {self.config.pagination_limit}, since: $since, after: $cursor) {{
+                                nodes {{
                                     messageHeadline
                                     committedDate
-                                    author {
+                                    author {{
                                         name
-                                    }
-                                }
-                                pageInfo {
+                                    }}
+                                }}
+                                pageInfo {{
                                     hasNextPage
                                     endCursor
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                }}
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
         '''
         
-        self.ISSUES_QUERY = '''
-        query($cursor: String) {
-            repository(owner: "%s", name: "%s") {
-                issues(first: 100, states: [OPEN, CLOSED], after: $cursor, orderBy: {field: CREATED_AT, direction: DESC}) {
-                    nodes {
+        self.ISSUES_QUERY = f'''
+        query($cursor: String) {{
+            repository(owner: "%s", name: "%s") {{
+                issues(first: {self.config.pagination_limit}, states: [OPEN, CLOSED], after: $cursor, orderBy: {{field: CREATED_AT, direction: DESC}}) {{
+                    nodes {{
                         title
                         state
-                        author {
+                        author {{
                             login
-                        }
+                        }}
                         createdAt
-                    }
-                    pageInfo {
+                    }}
+                    pageInfo {{
                         hasNextPage
                         endCursor
-                    }
-                }
-            }
-        }
+                    }}
+                }}
+            }}
+        }}
         '''
     
     def run_query(self, query: str, variables: Dict = {}) -> Optional[Dict[Any, Any]]:
         """Run a GraphQL query with variables and return the response"""
         try:
             logger.debug(f"Running query with variables: {variables}")
-            response = requests.post(self.url, headers=self.headers, json={'query': query, 'variables': variables})
+            response = requests.post(
+                self.url, 
+                headers=self.headers, 
+                json={'query': query, 'variables': variables},
+                timeout=self.config.request_timeout
+            )
             if response.status_code == 200:
                 logger.debug("Query successful")
                 return response.json()

@@ -19,6 +19,13 @@ class Configuration:
         self.contributors_output: str = 'contributors.jsonl'
         self.commits_output: str = 'commits.jsonl'
         self.issues_output: str = 'issues.jsonl'
+        
+        # GitHub API configuration
+        self.github_api_url: str = 'https://api.github.com/graphql'
+        self.pagination_limit: int = 100
+        self.date_range_days: int = 365
+        self.request_timeout: int = 30
+        
         self._load_config(config_file)
     
     def _load_config(self, config_file: str) -> None:
@@ -35,6 +42,12 @@ class Configuration:
                 self.contributors_output = config.get('contributors_output', 'contributors.jsonl')
                 self.commits_output = config.get('commits_output', 'commits.jsonl')
                 self.issues_output = config.get('issues_output', 'issues.jsonl')
+                
+                # GitHub API configuration
+                self.github_api_url = config.get('github_api_url', 'https://api.github.com/graphql')
+                self.pagination_limit = config.get('pagination_limit', 100)
+                self.date_range_days = config.get('date_range_days', 365)
+                self.request_timeout = config.get('request_timeout', 30)
                 
             if not self.owner or not self.repo_name:
                 logger.error("Please ensure config.yaml contains 'owner' and 'repo_name' keys.")
