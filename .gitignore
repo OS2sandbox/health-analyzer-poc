@@ -1,0 +1,4 @@
+#  local helpers and temp files 
+.local
+.workspace
+.aider*
