@@ -1,14 +1,16 @@
-owner: "duckdb"
-repo_name: "duckdb-wasm"
-output_dir: "."
-root_md_files_output: "root_md_files.jsonl"
-license_output: "license.jsonl"
-releases_output: "releases.jsonl"
-contributors_output: "contributors.jsonl"
-commits_output: "commits.jsonl"
-issues_output: "issues.jsonl"
+repo:
+  owner: "duckdb"
+  name: "duckdb-wasm"
 
-# GitHub API configuration
+output:
+  directory: "."
+  root_md_files: "root_md_files.jsonl"
+  license: "license.jsonl"
+  releases: "releases.jsonl"
+  contributors: "contributors.jsonl"
+  commits: "commits.jsonl"
+  issues: "issues.jsonl"
+
 github_api_url: "https://api.github.com/graphql"
 pagination_limit: 100
 date_range_days: 365
