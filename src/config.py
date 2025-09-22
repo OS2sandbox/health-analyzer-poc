@@ -26,6 +26,7 @@ class Configuration:
         
         # GitHub API configuration
         self.github_api_url: str = 'https://api.github.com/graphql'
+        self.github_token: Optional[str] = None
         self.pagination_limit: int = 100
         self.date_range_days: int = 365
         self.request_timeout: int = 30
@@ -35,6 +36,7 @@ class Configuration:
         # Override with environment variables if set
         self.owner = os.environ.get('REPO_OWNER') or self.owner
         self.repo_name = os.environ.get('REPO_NAME') or self.repo_name
+        self.github_token = os.environ.get('GITHUB_TOKEN') or self.github_token
     
     def _load_config(self, config_file: str) -> None:
         """Load configuration from YAML file"""
@@ -59,6 +61,7 @@ class Configuration:
                 
                 # Load GitHub API configuration
                 self.github_api_url = config.get('github_api_url', 'https://api.github.com/graphql')
+                self.github_token = config.get('github_token')  # Allow token in config file
                 self.pagination_limit = config.get('pagination_limit', 100)
                 self.date_range_days = config.get('date_range_days', 365)
                 self.request_timeout = config.get('request_timeout', 30)
