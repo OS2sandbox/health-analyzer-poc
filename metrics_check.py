@@ -6,6 +6,7 @@ from datetime import datetime
 from github_client import GitHubClient
 from metrics_processor import MetricsProcessor
 from file_writer import FileWriter
+from config import Configuration
 
 # Set up logging
 logging.basicConfig(
@@ -23,12 +24,13 @@ def main() -> None:
     
     try:
         # Initialize components
+        config = Configuration()
         github_client = GitHubClient()
         metrics_processor = MetricsProcessor(github_client)
         file_writer = FileWriter()
         
-        owner = github_client.owner
-        repo_name = github_client.repo_name
+        owner = config.owner
+        repo_name = config.repo_name
         
         logger.info(f"Processing repository: {owner}/{repo_name}")
         

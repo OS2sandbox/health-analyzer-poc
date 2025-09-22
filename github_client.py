@@ -14,29 +14,8 @@ class GitHubClient:
         # Check if required environment variables are set
         self.github_token = os.environ.get('GITHUB_TOKEN')
         
-        # Load owner and repo_name from config.yaml
-        try:
-            import yaml
-            with open('config.yaml', 'r') as f:
-                config = yaml.safe_load(f)
-                self.owner = config.get('owner')
-                self.repo_name = config.get('repo_name')
-        except FileNotFoundError:
-            logger.error("config.yaml file not found.")
-            sys.exit(1)
-        except ImportError:
-            logger.error("PyYAML is not installed. Please install it with: pip install PyYAML")
-            sys.exit(1)
-        except Exception as e:
-            logger.error(f"Error parsing config.yaml: {e}")
-            sys.exit(1)
-        
         if not self.github_token:
             logger.error("Please set GITHUB_TOKEN environment variable.")
-            sys.exit(1)
-            
-        if not self.owner or not self.repo_name:
-            logger.error("Please ensure config.yaml contains 'owner' and 'repo_name' keys.")
             sys.exit(1)
         
         # Headers for GraphQL API
