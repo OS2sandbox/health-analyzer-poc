@@ -1,3 +1,162 @@
+# GitHub Repository Metrics Collector
+
+This project collects various metrics from GitHub repositories using the GitHub GraphQL API and outputs them as JSONL files. It's designed to help analyze repository activity, contributors, issues, and other key metrics.
+
+## Features
+
+- Collects information on markdown files at repository root (e.g. README.md, LICENSE.md)
+- Retrieves repository license information
+- Gathers list of releases, with timestamps
+- Tracks contributors and their most recent contribution dates
+- Collects commit history
+- Records issue information including creators and status
+
+## Prerequisites
+
+- Python 3
+- A GitHub personal access token with appropriate repository read permissions
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Configuration
+
+The program can be configured using both a YAML configuration file and environment variables. Environment variables take precedence over the configuration file.
+
+### Configuration File (config/config.yaml)
+
+The default configuration file is located at `config/config.yaml`:
+
+```yaml
+repo:
+  owner: "duckdb"           # Repository owner/organization
+  name: "duckdb-wasm"       # Repository name
+
+output:
+  directory: "output"       # Output directory for JSONL files
+  root_md_files: "root_md_files.jsonl"
+  license: "license.jsonl"
+  releases: "releases.jsonl"
+  contributors: "contributors.jsonl"
+  commits: "commits.jsonl"
+  issues: "issues.jsonl"
+
+github_api_url: "https://api.github.com/graphql"
+pagination_limit: 100     # Number of items per API request
+date_range_days: 365      # How far back to collect data (in days)
+request_timeout: 30       # API request timeout in seconds
+```
+
+### Environment Variables
+
+You can override configuration values using environment variables:
+
+- `GITHUB_TOKEN`: (Required) Your GitHub personal access token
+- `CONFIG_FILE`: Path to custom configuration file (optional)
+- `REPO_OWNER`: Override repository owner from config
+- `REPO_NAME`: Override repository name from config
+
+To create a GitHub personal access token:
+
+1. Go to GitHub Settings > Developer settings > Personal access tokens
+2. Generate a new token with repo scope
+3. Copy the token for use with this application
+
+## Running the Program
+
+1. Set your GitHub token as an environment variable:
+   ```bash
+   export GITHUB_TOKEN=your_github_token_here
+   ```
+
+2. Run the metrics collection script:
+   ```bash
+   python src/metrics_check.py
+   ```
+
+3. To use a custom configuration file:
+   ```bash
+   export CONFIG_FILE=path/to/your/config.yaml
+   python src/metrics_check.py
+   ```
+
+4. To override repository owner/name:
+   ```bash
+   export REPO_OWNER=your_owner
+   export REPO_NAME=your_repo
+   python src/metrics_check.py
+   ```
+
+## Output Files
+
+All output files are saved in JSONL format (JSON Lines), with one JSON object per line. By default, files are saved to the `output/` directory.
+
+### root_md_files.jsonl
+
+Contains names of all markdown files in the repository root:
+
+```json
+{"file": "README.md"}
+{"file": "CONTRIBUTING.md"}
+```
+
+### license.jsonl
+
+Contains the repository license information:
+
+```json
+{"license": "MIT License"}
+```
+
+### releases.jsonl
+
+Contains release information with timestamps:
+
+```json
+{"name": "v1.0.0", "publishedAt": "2023-01-15T10:30:00Z"}
+```
+
+### contributors.jsonl
+
+Contains contributors with their most recent contribution date:
+
+```json
+{"login": "username", "last_contribution": "2023-05-20T14:22:30Z"}
+```
+
+### commits.jsonl
+
+Contains commit information:
+
+```json
+{"message": "Fix bug in parser", "date": "2023-05-19T09:15:00Z", "author": "Developer Name"}
+```
+
+### issues.jsonl
+
+Contains issue information:
+
+```json
+{"title": "Bug in authentication", "state": "CLOSED", "author": "user123", "createdAt": "2023-04-10T16:45:00Z"}
+```
+
+## Customization
+
+You can modify the date range for data collection by changing the `date_range_days` value in the configuration. The default is 365 days (1 year).
+
+The pagination limit can also be adjusted with `pagination_limit` to control how many items are fetched per API request.
+---
+
 # 🚀 Health Analyzer PoC
 > Reducing Risk in Open Source Adoption
 
