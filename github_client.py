@@ -4,7 +4,6 @@ import os
 import sys
 import requests
 import logging
-import yaml
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Any
 
@@ -17,6 +16,7 @@ class GitHubClient:
         
         # Load owner and repo_name from config.yaml
         try:
+            import yaml
             with open('config.yaml', 'r') as f:
                 config = yaml.safe_load(f)
                 self.owner = config.get('owner')
@@ -24,7 +24,10 @@ class GitHubClient:
         except FileNotFoundError:
             logger.error("config.yaml file not found.")
             sys.exit(1)
-        except yaml.YAMLError as e:
+        except ImportError:
+            logger.error("PyYAML is not installed. Please install it with: pip install PyYAML")
+            sys.exit(1)
+        except Exception as e:
             logger.error(f"Error parsing config.yaml: {e}")
             sys.exit(1)
         
