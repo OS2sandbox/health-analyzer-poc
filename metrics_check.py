@@ -25,9 +25,9 @@ def main() -> None:
     try:
         # Initialize components
         config = Configuration()
-        github_client = GitHubClient()
-        metrics_processor = MetricsProcessor(github_client)
-        file_writer = FileWriter()
+        github_client = GitHubClient(config)
+        metrics_processor = MetricsProcessor(github_client, config)
+        file_writer = FileWriter(config)
         
         owner = config.owner
         repo_name = config.repo_name
