@@ -3,12 +3,14 @@
 import logging
 from typing import Dict, List, Tuple, Optional, Any
 from github_client import GitHubClient
+from config import Configuration
 
 logger = logging.getLogger(__name__)
 
 class MetricsProcessor:
-    def __init__(self, github_client: GitHubClient):
+    def __init__(self, github_client: GitHubClient, config: Configuration):
         self.github_client = github_client
+        self.config = config
     
     def get_root_md_files(self, owner: str, repo_name: str) -> List[str]:
         """Get all .md files in the root folder"""
@@ -54,24 +56,24 @@ class MetricsProcessor:
                 # Filter releases from the past year
                 for edge in release_edges:
                     published_at = edge['node']['publishedAt']
-                    if published_at and published_at >= self.github_client.one_year_ago:
+                    if published_at and published_at >= self.github_client.date_range_ago:
                         releases.append({
                             'name': edge['node']['name'] or 'Unnamed release',
                             'publishedAt': published_at
                         })
-                    elif published_at and published_at < self.github_client.one_year_ago:
-                        # Stop pagination if we've gone past the one-year boundary
-                        logger.debug("Reached releases older than one year, stopping pagination")
+                    elif published_at and published_at < self.github_client.date_range_ago:
+                        # Stop pagination if we've gone past the date range boundary
+                        logger.debug(f"Reached releases older than {self.config.date_range_days} days, stopping pagination")
                         return releases, None
                         
         return releases, page_info
     
     def get_releases(self, owner: str, repo_name: str) -> List[Dict[str, str]]:
-        """Get all releases with timestamps from the past year"""
+        """Get all releases with timestamps from the past date range"""
         logger.info("Checking releases...")
         query = self.github_client.RELEASES_QUERY % (owner, repo_name)
         releases = self._paginate_github_query(query, self._extract_releases)
-        logger.info(f"Found {len(releases)} releases in the past year")
+        logger.info(f"Found {len(releases)} releases in the past {self.config.date_range_days} days")
         return releases
     
     def _extract_contributors(self, result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
@@ -99,10 +101,10 @@ class MetricsProcessor:
         return [contributors], page_info
     
     def get_contributors(self, owner: str, repo_name: str) -> Dict[str, str]:
-        """Get all contributors with their most recent contribution date from the past year"""
+        """Get all contributors with their most recent contribution date from the past date range"""
         logger.info("Checking contributors...")
         query = self.github_client.CONTRIBUTORS_QUERY % (owner, repo_name)
-        contributor_list = self._paginate_github_query(query, self._extract_contributors, {'since': self.github_client.one_year_ago})
+        contributor_list = self._paginate_github_query(query, self._extract_contributors, {'since': self.github_client.date_range_ago})
         
         # Merge all contributor dictionaries
         final_contributors: Dict[str, str] = {}
@@ -111,7 +113,7 @@ class MetricsProcessor:
                 if login not in final_contributors or date > final_contributors[login]:
                     final_contributors[login] = date
                     
-        logger.info(f"Found {len(final_contributors)} contributors in the past year")
+        logger.info(f"Found {len(final_contributors)} contributors in the past {self.config.date_range_days} days")
         return final_contributors
     
     def _extract_commits(self, result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
@@ -138,11 +140,11 @@ class MetricsProcessor:
         return commits, page_info
     
     def get_commits(self, owner: str, repo_name: str) -> List[Dict[str, str]]:
-        """Get all commits from the past year"""
+        """Get all commits from the past date range"""
         logger.info("Checking commits...")
         query = self.github_client.COMMITS_QUERY % (owner, repo_name)
-        commits = self._paginate_github_query(query, self._extract_commits, {'since': self.github_client.one_year_ago})
-        logger.info(f"Found {len(commits)} commits in the past year")
+        commits = self._paginate_github_query(query, self._extract_commits, {'since': self.github_client.date_range_ago})
+        logger.info(f"Found {len(commits)} commits in the past {self.config.date_range_days} days")
         return commits
     
     def _extract_issues(self, result: Dict) -> Tuple[List[Dict[str, str]], Optional[Dict]]:
@@ -156,29 +158,29 @@ class MetricsProcessor:
                 issue_nodes = repo_data['issues']['nodes']
                 page_info = repo_data['issues']['pageInfo']
                 
-                # Filter issues from the past year
+                # Filter issues from the past date range
                 for issue in issue_nodes:
                     created_at = issue.get('createdAt')
-                    if created_at and created_at >= self.github_client.one_year_ago:
+                    if created_at and created_at >= self.github_client.date_range_ago:
                         issues.append({
                             'title': issue.get('title', ''),
                             'state': issue.get('state', ''),
                             'author': issue.get('author', {}).get('login', 'Unknown') if issue.get('author') else 'Unknown',
                             'createdAt': created_at
                         })
-                    elif created_at and created_at < self.github_client.one_year_ago:
-                        # Stop pagination if we've gone past the one-year boundary
-                        logger.debug("Reached issues older than one year, stopping pagination")
+                    elif created_at and created_at < self.github_client.date_range_ago:
+                        # Stop pagination if we've gone past the date range boundary
+                        logger.debug(f"Reached issues older than {self.config.date_range_days} days, stopping pagination")
                         return issues, None
                         
         return issues, page_info
     
     def get_issues(self, owner: str, repo_name: str) -> List[Dict[str, str]]:
-        """Get all issues with creator and status from the past year"""
+        """Get all issues with creator and status from the past date range"""
         logger.info("Checking issues...")
         query = self.github_client.ISSUES_QUERY % (owner, repo_name)
         issues = self._paginate_github_query(query, self._extract_issues)
-        logger.info(f"Found {len(issues)} issues in the past year")
+        logger.info(f"Found {len(issues)} issues in the past {self.config.date_range_days} days")
         return issues
     
     def _paginate_github_query(
