@@ -11,6 +11,7 @@ class Configuration:
     def __init__(self, config_file: str = 'config.yaml'):
         self.owner: Optional[str] = None
         self.repo_name: Optional[str] = None
+        self.config_file: str = config_file
         self._load_config(config_file)
     
     def _load_config(self, config_file: str) -> None:
