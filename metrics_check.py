@@ -2,6 +2,7 @@
 
 import sys
 import logging
+import os
 from datetime import datetime
 from github_client import GitHubClient
 from metrics_processor import MetricsProcessor
@@ -24,7 +25,15 @@ def main() -> None:
     
     try:
         # Initialize components
-        config = Configuration()
+        # Get config file from environment variable or use None to let Configuration class handle it
+        config_file = os.environ.get('CONFIG_FILE')
+        config = Configuration(config_file)
+        
+        # Check if owner and repo_name are set
+        if not config.owner or not config.repo_name:
+            logger.error("Please ensure repo.owner and repo.name are set either in config file or via environment variables (REPO_OWNER, REPO_NAME).")
+            sys.exit(1)
+        
         github_client = GitHubClient(config)
         metrics_processor = MetricsProcessor(github_client, config)
         file_writer = FileWriter(config)
