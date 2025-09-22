@@ -2,3 +2,9 @@
 .local
 .workspace
 .aider*
+.env
+.evidence
+__pycache__
+*.jsonl
+node_modules
+venv
