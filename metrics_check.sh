@@ -23,112 +23,120 @@ echo "Since date: $SINCE_DATE"
 echo "Checking metrics for repository: $OWNER/$REPO_NAME"
 echo "=================================================="
 
-# 1. Check for README and OSI-Approved License
-echo "1. Checking for README and OSI-approved license..."
+# 1. List all .md files in the root folder
+echo "1. Listing all .md files in the root folder..."
 QUERY1='{
-    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { readme { name } licenseInfo { key name } } }"
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { object(expression: \"HEAD:\") { ... on Tree { entries { name } } } } }"
 }'
 echo "   Query: $QUERY1"
-README_LICENSE_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+ROOT_FILES_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$QUERY1" https://api.github.com/graphql)
-echo "   Raw response: $README_LICENSE_RESPONSE"
+echo "   Raw response: $ROOT_FILES_RESPONSE"
 
-# Parse the response
-HAS_README=$(echo "$README_LICENSE_RESPONSE" | grep -q '"readme":{' && echo "true" || echo "false")
-HAS_LICENSE=$(echo "$README_LICENSE_RESPONSE" | grep -q '"licenseInfo":{' && echo "true" || echo "false")
-echo "   Has README: $HAS_README"
-echo "   Has License: $HAS_LICENSE"
-
-if [ "$HAS_README" = "true" ] && [ "$HAS_LICENSE" = "true" ]; then
-    echo "   Result: README and OSI-approved license: PASS"
-else
-    echo "   Result: README and OSI-approved license: FAIL"
-fi
+# Extract .md files
+echo "   .md files in root:"
+echo "$ROOT_FILES_RESPONSE" | grep -o '"name":"[^"]*"' | cut -d'"' -f4 | grep '\.md$' | while read -r file; do
+    echo "     - $file"
+done
 echo
 
-# 2. Check for at least one release in the last year
-echo "2. Checking for releases in the last year..."
+# 2. Get license name
+echo "2. Getting license name..."
 QUERY2='{
-    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { releases(last: 1, orderBy: {field: CREATED_AT, direction: DESC}) { edges { node { publishedAt } } } } }"
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { licenseInfo { name } } }"
 }'
 echo "   Query: $QUERY2"
-RELEASE_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+LICENSE_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$QUERY2" https://api.github.com/graphql)
-echo "   Raw response: $RELEASE_RESPONSE"
+echo "   Raw response: $LICENSE_RESPONSE"
 
-# Check if the most recent release is within the last year
-LATEST_RELEASE_DATE=$(echo "$RELEASE_RESPONSE" | grep -o '"publishedAt":"[^"]*"' | cut -d'"' -f4)
-echo "   Latest release date: $LATEST_RELEASE_DATE"
-if [ -n "$LATEST_RELEASE_DATE" ]; then
-    RELEASE_EPOCH=$(date -d "$LATEST_RELEASE_DATE" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LATEST_RELEASE_DATE" +%s)
-    YEAR_AGO_EPOCH=$(date -d "$SINCE_DATE" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$SINCE_DATE" +%s)
-    echo "   Release epoch: $RELEASE_EPOCH"
-    echo "   Year ago epoch: $YEAR_AGO_EPOCH"
-    if [ "$RELEASE_EPOCH" -gt "$YEAR_AGO_EPOCH" ]; then
-        echo "   Result: Release in last year: yes"
-    else
-        echo "   Result: Release in last year: no"
-    fi
-else
-    echo "   Result: Release in last year: no"
-fi
+# Extract license name
+LICENSE_NAME=$(echo "$LICENSE_RESPONSE" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
+echo "   License name: ${LICENSE_NAME:-None}"
 echo
 
-# 3. Count active contributors (last 12 months)
-echo "3. Counting active contributors in the last 12 months..."
+# 3. List all releases with timestamps
+echo "3. Listing all releases with timestamps..."
 QUERY3='{
-    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { defaultBranchRef { target { ... on Commit { history(since: \"'"$SINCE_DATE"'\") { nodes { author { user { login } } } } } } } } }"
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { releases(last: 100, orderBy: {field: CREATED_AT, direction: DESC}) { edges { node { name publishedAt } } } } }"
 }'
 echo "   Query: $QUERY3"
-CONTRIBUTORS_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+RELEASES_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$QUERY3" https://api.github.com/graphql)
-echo "   Raw response: $CONTRIBUTORS_RESPONSE"
+echo "   Raw response: $RELEASES_RESPONSE"
 
-# Extract and count unique logins
-UNIQUE_CONTRIBUTORS=$(echo "$CONTRIBUTORS_RESPONSE" | grep -o '"login":"[^"]*"' | sort | uniq | wc -l)
-echo "   Unique contributors count: $UNIQUE_CONTRIBUTORS"
-if [ "$UNIQUE_CONTRIBUTORS" -gt 3 ]; then
-    echo "   Result: Number of active contributors: above 3 ($UNIQUE_CONTRIBUTORS)"
-else
-    echo "   Result: Number of active contributors: below 3 ($UNIQUE_CONTRIBUTORS)"
-fi
+# Extract releases
+echo "   Releases:"
+echo "$RELEASES_RESPONSE" | grep -E '"name":|"publishedAt":' | while read -r line1 && read -r line2; do
+    name=$(echo "$line1" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
+    date=$(echo "$line2" | grep -o '"publishedAt":"[^"]*"' | cut -d'"' -f4)
+    echo "     - $name: $date"
+done
 echo
 
-# 4. Count commits per month (last 12 months)
-echo "4. Calculating average commits per month..."
+# 4. List all contributors with their most recent contribution date
+echo "4. Listing all contributors with their most recent contribution date..."
 QUERY4='{
-    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { defaultBranchRef { target { ... on Commit { history(since: \"'"$SINCE_DATE"'\") { totalCount } } } } } }"
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { defaultBranchRef { target { ... on Commit { history(first: 100) { nodes { author { user { login } } committedDate } } } } } } }"
 }'
 echo "   Query: $QUERY4"
-COMMITS_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+CONTRIBUTORS_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$QUERY4" https://api.github.com/graphql)
-echo "   Raw response: $COMMITS_RESPONSE"
+echo "   Raw response: $CONTRIBUTORS_RESPONSE"
 
-TOTAL_COMMITS=$(echo "$COMMITS_RESPONSE" | grep -o '"totalCount":[0-9]*' | cut -d':' -f2)
-echo "   Total commits: $TOTAL_COMMITS"
-AVG_COMMITS_PER_MONTH=$((TOTAL_COMMITS / 12))
-echo "   Average commits per month: $AVG_COMMITS_PER_MONTH"
-if [ "$AVG_COMMITS_PER_MONTH" -gt 2 ]; then
-    echo "   Result: Average commits per month: above 2 ($AVG_COMMITS_PER_MONTH)"
-else
-    echo "   Result: Average commits per month: below 2 ($AVG_COMMITS_PER_MONTH)"
-fi
+# Extract contributors and their latest commit dates
+echo "   Contributors and their most recent contribution:"
+# This is a simplified approach - in practice, you'd want to process this more carefully
+echo "$CONTRIBUTORS_RESPONSE" | grep -E '"login":|"committedDate":' | while read -r line1 && read -r line2; do
+    login=$(echo "$line1" | grep -o '"login":"[^"]*"' | cut -d'"' -f4)
+    date=$(echo "$line2" | grep -o '"committedDate":"[^"]*"' | cut -d'"' -f4)
+    if [ -n "$login" ] && [ -n "$date" ]; then
+        echo "     - $login: $date"
+    fi
+done
 echo
 
-# 5. Count open issues
-echo "5. Counting open issues..."
+# 5. List all commits
+echo "5. Listing all commits..."
 QUERY5='{
-    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { issues(states: OPEN) { totalCount } } }"
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { defaultBranchRef { target { ... on Commit { history(first: 100) { nodes { messageHeadline committedDate author { name } } } } } } } }"
 }'
 echo "   Query: $QUERY5"
-ISSUES_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+COMMITS_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$QUERY5" https://api.github.com/graphql)
+echo "   Raw response: $COMMITS_RESPONSE"
+
+# Extract commits
+echo "   Commits:"
+echo "$COMMITS_RESPONSE" | grep -E '"messageHeadline":|"committedDate":|"name":' | while read -r line1 && read -r line2 && read -r line3; do
+    message=$(echo "$line1" | grep -o '"messageHeadline":"[^"]*"' | cut -d'"' -f4)
+    date=$(echo "$line2" | grep -o '"committedDate":"[^"]*"' | cut -d'"' -f4)
+    author=$(echo "$line3" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
+    echo "     - $date: $author - $message"
+done
+echo
+
+# 6. List all issues with creator and status
+echo "6. Listing all issues with creator and status..."
+QUERY6='{
+    "query": "query { repository(owner: \"'"$OWNER"'\", name: \"'"$REPO_NAME"'\") { issues(first: 100, states: [OPEN, CLOSED]) { nodes { title state author { login } } } } }"
+}'
+echo "   Query: $QUERY6"
+ISSUES_RESPONSE=$(curl -s -H "Authorization: bearer $GITHUB_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$QUERY6" https://api.github.com/graphql)
 echo "   Raw response: $ISSUES_RESPONSE"
 
-OPEN_ISSUES=$(echo "$ISSUES_RESPONSE" | grep -o '"totalCount":[0-9]*' | cut -d':' -f2)
-echo "   Result: Number of open issues: $OPEN_ISSUES"
+# Extract issues
+echo "   Issues:"
+echo "$ISSUES_RESPONSE" | grep -E '"title":|"state":|"login":' | while read -r line1 && read -r line2 && read -r line3; do
+    title=$(echo "$line1" | grep -o '"title":"[^"]*"' | cut -d'"' -f4)
+    state=$(echo "$line2" | grep -o '"state":"[^"]*"' | cut -d'"' -f4)
+    author=$(echo "$line3" | grep -o '"login":"[^"]*"' | cut -d'"' -f4)
+    echo "     - $state: $author - $title"
+done
