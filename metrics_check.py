@@ -25,7 +25,10 @@ headers = {
 # GraphQL endpoint
 url = 'https://api.github.com/graphql'
 
-# GraphQL Queries
+# Calculate the date for one year ago
+one_year_ago = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+# GraphQL Queries with pagination and date filtering
 ROOT_FILES_QUERY = '''
 {
     repository(owner: "%s", name: "%s") {
@@ -51,14 +54,19 @@ LICENSE_QUERY = '''
 '''
 
 RELEASES_QUERY = '''
-{
+query($cursor: String) {
     repository(owner: "%s", name: "%s") {
-        releases(last: 100, orderBy: {field: CREATED_AT, direction: DESC}) {
+        releases(first: 100, orderBy: {field: CREATED_AT, direction: DESC}, after: $cursor) {
             edges {
                 node {
                     name
                     publishedAt
                 }
+                cursor
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
             }
         }
     }
@@ -66,12 +74,12 @@ RELEASES_QUERY = '''
 '''
 
 CONTRIBUTORS_QUERY = '''
-{
+query($cursor: String, $since: GitTimestamp!) {
     repository(owner: "%s", name: "%s") {
         defaultBranchRef {
             target {
                 ... on Commit {
-                    history(first: 100) {
+                    history(first: 100, since: $since, after: $cursor) {
                         nodes {
                             author {
                                 user {
@@ -79,6 +87,10 @@ CONTRIBUTORS_QUERY = '''
                                 }
                             }
                             committedDate
+                        }
+                        pageInfo {
+                            hasNextPage
+                            endCursor
                         }
                     }
                 }
@@ -89,18 +101,22 @@ CONTRIBUTORS_QUERY = '''
 '''
 
 COMMITS_QUERY = '''
-{
+query($cursor: String, $since: GitTimestamp!) {
     repository(owner: "%s", name: "%s") {
         defaultBranchRef {
             target {
                 ... on Commit {
-                    history(first: 100) {
+                    history(first: 100, since: $since, after: $cursor) {
                         nodes {
                             messageHeadline
                             committedDate
                             author {
                                 name
                             }
+                        }
+                        pageInfo {
+                            hasNextPage
+                            endCursor
                         }
                     }
                 }
@@ -111,25 +127,30 @@ COMMITS_QUERY = '''
 '''
 
 ISSUES_QUERY = '''
-{
+query($cursor: String) {
     repository(owner: "%s", name: "%s") {
-        issues(first: 100, states: [OPEN, CLOSED]) {
+        issues(first: 100, states: [OPEN, CLOSED], after: $cursor, orderBy: {field: CREATED_AT, direction: DESC}) {
             nodes {
                 title
                 state
                 author {
                     login
                 }
+                createdAt
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
             }
         }
     }
 }
 '''
 
-def run_query(query: str) -> Optional[Dict[Any, Any]]:
-    """Run a GraphQL query and return the response"""
+def run_query(query: str, variables: Dict = {}) -> Optional[Dict[Any, Any]]:
+    """Run a GraphQL query with variables and return the response"""
     try:
-        response = requests.post(url, headers=headers, json={'query': query})
+        response = requests.post(url, headers=headers, json={'query': query, 'variables': variables})
         if response.status_code == 200:
             return response.json()
         else:
@@ -199,75 +220,154 @@ def check_license(owner: str, repo_name: str) -> str:
     return license_name
 
 def check_releases(owner: str, repo_name: str) -> List[Dict[str, str]]:
-    """Check and return all releases with timestamps"""
-    query = RELEASES_QUERY % (owner, repo_name)
-    result = run_query(query)
-    
+    """Check and return all releases with timestamps from the past year"""
     releases = []
-    if result and 'data' in result and result['data']['repository']['releases']:
-        release_edges = result['data']['repository']['releases']['edges']
-        releases = [
-            {
-                'name': edge['node']['name'] or 'Unnamed release',
-                'publishedAt': edge['node']['publishedAt']
-            }
-            for edge in release_edges
-        ]
+    has_next_page = True
+    cursor = None
+    
+    while has_next_page:
+        query = RELEASES_QUERY % (owner, repo_name)
+        variables = {}
+        if cursor:
+            variables['cursor'] = cursor
+            
+        result = run_query(query, variables)
+        
+        if result and 'data' in result and result['data']['repository']['releases']:
+            release_edges = result['data']['repository']['releases']['edges']
+            
+            # Filter releases from the past year
+            for edge in release_edges:
+                published_at = edge['node']['publishedAt']
+                if published_at and published_at >= one_year_ago:
+                    releases.append({
+                        'name': edge['node']['name'] or 'Unnamed release',
+                        'publishedAt': published_at
+                    })
+                elif published_at and published_at < one_year_ago:
+                    # Stop if we've gone past the one-year boundary
+                    has_next_page = False
+                    break
+            
+            # Check pagination info
+            page_info = result['data']['repository']['releases']['pageInfo']
+            has_next_page = page_info['hasNextPage'] and has_next_page
+            cursor = page_info['endCursor']
+        else:
+            has_next_page = False
+    
     write_releases(releases)
     return releases
 
 def check_contributors(owner: str, repo_name: str) -> Dict[str, str]:
-    """Check and return all contributors with their most recent contribution date"""
-    query = CONTRIBUTORS_QUERY % (owner, repo_name)
-    result = run_query(query)
-    
+    """Check and return all contributors with their most recent contribution date from the past year"""
     contributors: Dict[str, str] = {}
-    if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
-        commits = result['data']['repository']['defaultBranchRef']['target']['history']['nodes']
-        for commit in commits:
-            if commit['author'] and commit['author']['user']:
-                login = commit['author']['user']['login']
-                date = commit['committedDate']
-                if login not in contributors or date > contributors[login]:
-                    contributors[login] = date
+    has_next_page = True
+    cursor = None
+    
+    while has_next_page:
+        query = CONTRIBUTORS_QUERY % (owner, repo_name)
+        variables = {'since': one_year_ago}
+        if cursor:
+            variables['cursor'] = cursor
+            
+        result = run_query(query, variables)
+        
+        if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
+            history = result['data']['repository']['defaultBranchRef']['target']['history']
+            commits = history['nodes']
+            
+            for commit in commits:
+                if commit['author'] and commit['author']['user']:
+                    login = commit['author']['user']['login']
+                    date = commit['committedDate']
+                    if login not in contributors or date > contributors[login]:
+                        contributors[login] = date
+            
+            # Check pagination info
+            page_info = history['pageInfo']
+            has_next_page = page_info['hasNextPage']
+            cursor = page_info['endCursor']
+        else:
+            has_next_page = False
+    
     write_contributors(contributors)
     return contributors
 
 def check_commits(owner: str, repo_name: str) -> List[Dict[str, str]]:
-    """Check and return all commits"""
-    query = COMMITS_QUERY % (owner, repo_name)
-    result = run_query(query)
-    
+    """Check and return all commits from the past year"""
     commits = []
-    if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
-        commit_nodes = result['data']['repository']['defaultBranchRef']['target']['history']['nodes']
-        commits = [
-            {
-                'message': commit['messageHeadline'],
-                'date': commit['committedDate'],
-                'author': commit['author']['name'] if commit['author'] else 'Unknown'
-            }
-            for commit in commit_nodes
-        ]
+    has_next_page = True
+    cursor = None
+    
+    while has_next_page:
+        query = COMMITS_QUERY % (owner, repo_name)
+        variables = {'since': one_year_ago}
+        if cursor:
+            variables['cursor'] = cursor
+            
+        result = run_query(query, variables)
+        
+        if result and 'data' in result and result['data']['repository']['defaultBranchRef']:
+            history = result['data']['repository']['defaultBranchRef']['target']['history']
+            commit_nodes = history['nodes']
+            
+            for commit in commit_nodes:
+                commits.append({
+                    'message': commit['messageHeadline'],
+                    'date': commit['committedDate'],
+                    'author': commit['author']['name'] if commit['author'] else 'Unknown'
+                })
+            
+            # Check pagination info
+            page_info = history['pageInfo']
+            has_next_page = page_info['hasNextPage']
+            cursor = page_info['endCursor']
+        else:
+            has_next_page = False
+    
     write_commits(commits)
     return commits
 
 def check_issues(owner: str, repo_name: str) -> List[Dict[str, str]]:
-    """Check and return all issues with creator and status"""
-    query = ISSUES_QUERY % (owner, repo_name)
-    result = run_query(query)
-    
+    """Check and return all issues with creator and status from the past year"""
     issues = []
-    if result and 'data' in result and result['data']['repository']['issues']:
-        issue_nodes = result['data']['repository']['issues']['nodes']
-        issues = [
-            {
-                'title': issue['title'],
-                'state': issue['state'],
-                'author': issue['author']['login'] if issue['author'] else 'Unknown'
-            }
-            for issue in issue_nodes
-        ]
+    has_next_page = True
+    cursor = None
+    
+    while has_next_page:
+        query = ISSUES_QUERY % (owner, repo_name)
+        variables = {}
+        if cursor:
+            variables['cursor'] = cursor
+            
+        result = run_query(query, variables)
+        
+        if result and 'data' in result and result['data']['repository']['issues']:
+            issue_nodes = result['data']['repository']['issues']['nodes']
+            
+            # Filter issues from the past year
+            for issue in issue_nodes:
+                created_at = issue['createdAt']
+                if created_at and created_at >= one_year_ago:
+                    issues.append({
+                        'title': issue['title'],
+                        'state': issue['state'],
+                        'author': issue['author']['login'] if issue['author'] else 'Unknown',
+                        'createdAt': created_at
+                    })
+                elif created_at and created_at < one_year_ago:
+                    # Stop if we've gone past the one-year boundary
+                    has_next_page = False
+                    break
+            
+            # Check pagination info
+            page_info = result['data']['repository']['issues']['pageInfo']
+            has_next_page = page_info['hasNextPage'] and has_next_page
+            cursor = page_info['endCursor']
+        else:
+            has_next_page = False
+    
     write_issues(issues)
     return issues
 
