@@ -139,29 +139,40 @@ def run_query(query: str) -> Optional[Dict[Any, Any]]:
         print(f"Query failed with exception: {e}")
         return None
 
-def print_root_md_files(md_files: List[str]) -> None:
-    """Print the .md files in the root folder as JSON"""
-    print(json.dumps({"metric": "root_md_files", "data": md_files}))
+def write_root_md_files(md_files: List[str]) -> None:
+    """Write the .md files in the root folder as JSONL"""
+    with open('root_md_files.jsonl', 'w') as f:
+        for file in md_files:
+            f.write(json.dumps({"file": file}) + '\n')
 
-def print_license(license_name: str) -> None:
-    """Print the repository license name as JSON"""
-    print(json.dumps({"metric": "license", "data": license_name}))
+def write_license(license_name: str) -> None:
+    """Write the repository license name as JSONL"""
+    with open('license.jsonl', 'w') as f:
+        f.write(json.dumps({"license": license_name}) + '\n')
 
-def print_releases(releases: List[Dict[str, str]]) -> None:
-    """Print all releases with timestamps as JSON"""
-    print(json.dumps({"metric": "releases", "data": releases}))
+def write_releases(releases: List[Dict[str, str]]) -> None:
+    """Write all releases with timestamps as JSONL"""
+    with open('releases.jsonl', 'w') as f:
+        for release in releases:
+            f.write(json.dumps(release) + '\n')
 
-def print_contributors(contributors: Dict[str, str]) -> None:
-    """Print all contributors with their most recent contribution date as JSON"""
-    print(json.dumps({"metric": "contributors", "data": contributors}))
+def write_contributors(contributors: Dict[str, str]) -> None:
+    """Write all contributors with their most recent contribution date as JSONL"""
+    with open('contributors.jsonl', 'w') as f:
+        for login, date in contributors.items():
+            f.write(json.dumps({"login": login, "last_contribution": date}) + '\n')
 
-def print_commits(commits: List[Dict[str, str]]) -> None:
-    """Print all commits as JSON"""
-    print(json.dumps({"metric": "commits", "data": commits}))
+def write_commits(commits: List[Dict[str, str]]) -> None:
+    """Write all commits as JSONL"""
+    with open('commits.jsonl', 'w') as f:
+        for commit in commits:
+            f.write(json.dumps(commit) + '\n')
 
-def print_issues(issues: List[Dict[str, str]]) -> None:
-    """Print all issues with creator and status as JSON"""
-    print(json.dumps({"metric": "issues", "data": issues}))
+def write_issues(issues: List[Dict[str, str]]) -> None:
+    """Write all issues with creator and status as JSONL"""
+    with open('issues.jsonl', 'w') as f:
+        for issue in issues:
+            f.write(json.dumps(issue) + '\n')
 
 def check_root_md_files(owner: str, repo_name: str) -> List[str]:
     """Check and return all .md files in the root folder"""
@@ -172,7 +183,7 @@ def check_root_md_files(owner: str, repo_name: str) -> List[str]:
     if result and 'data' in result and result['data']['repository']['object']:
         entries = result['data']['repository']['object']['entries']
         md_files = [entry['name'] for entry in entries if entry['name'].endswith('.md')]
-    print_root_md_files(md_files)
+    write_root_md_files(md_files)
     return md_files
 
 def check_license(owner: str, repo_name: str) -> str:
@@ -184,7 +195,7 @@ def check_license(owner: str, repo_name: str) -> str:
     if result and 'data' in result:
         license_info = result['data']['repository']['licenseInfo']
         license_name = license_info['name'] if license_info else 'None'
-    print_license(license_name)
+    write_license(license_name)
     return license_name
 
 def check_releases(owner: str, repo_name: str) -> List[Dict[str, str]]:
@@ -202,7 +213,7 @@ def check_releases(owner: str, repo_name: str) -> List[Dict[str, str]]:
             }
             for edge in release_edges
         ]
-    print_releases(releases)
+    write_releases(releases)
     return releases
 
 def check_contributors(owner: str, repo_name: str) -> Dict[str, str]:
@@ -219,7 +230,7 @@ def check_contributors(owner: str, repo_name: str) -> Dict[str, str]:
                 date = commit['committedDate']
                 if login not in contributors or date > contributors[login]:
                     contributors[login] = date
-    print_contributors(contributors)
+    write_contributors(contributors)
     return contributors
 
 def check_commits(owner: str, repo_name: str) -> List[Dict[str, str]]:
@@ -238,7 +249,7 @@ def check_commits(owner: str, repo_name: str) -> List[Dict[str, str]]:
             }
             for commit in commit_nodes
         ]
-    print_commits(commits)
+    write_commits(commits)
     return commits
 
 def check_issues(owner: str, repo_name: str) -> List[Dict[str, str]]:
@@ -257,7 +268,7 @@ def check_issues(owner: str, repo_name: str) -> List[Dict[str, str]]:
             }
             for issue in issue_nodes
         ]
-    print_issues(issues)
+    write_issues(issues)
     return issues
 
 def main() -> None:
