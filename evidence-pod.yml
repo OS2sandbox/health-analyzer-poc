@@ -5,14 +5,14 @@ metadata:
   name: evidence-pod
 spec:
   volumes:
-    - name: project-data
-      hostPath:
-        path: /home/jmk/Repositories/evidence-dev
-        type: Directory
-        selinuxRelabel: "shared"
     - name: sources-data
       hostPath:
-        path: /home/jmk/Repositories/evidence-dev/sources
+        path: ./.local/metrics
+        type: Directory
+        selinuxRelabel: "shared"
+    - name: node_modules
+      hostPath:
+        path: ./.local/node_modules
         type: Directory
         selinuxRelabel: "shared"
   containers:
@@ -25,10 +25,10 @@ spec:
         - containerPort: 3000
           hostPort: 3000
       volumeMounts:
-        - mountPath: /app
-          name: project-data
-        - mountPath: /app/sources
+        - mountPath: /sources
           name: sources-data
-      workingDir: /app
+        - mountPath: /evidence-workspace/node_modules
+          name: node_modules
+      workingDir: /evidence-workspace
       command: ["/bin/bash"]
-      args: ["-c", "npm install && npm run sources && npm run dev -- --host"]
+      args: ["-c", "set -x && npx degit evidence-dev/template . --force && npm install --force && ln -sf /sources /evidence-workspace/sources && npm run sources && npm run dev -- --host 0.0.0.0"]

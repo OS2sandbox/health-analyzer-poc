@@ -13,3 +13,8 @@ static/data
 npm-debug.log*
 .vite/
 .evidence/temp/
+.token
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/
+.local/
