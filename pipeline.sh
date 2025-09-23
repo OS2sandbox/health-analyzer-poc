@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -euxo pipefail
+
 mkdir -p .local/raw_data .local/metrics
 
 chmod o+w .local/raw_data .local/metrics
