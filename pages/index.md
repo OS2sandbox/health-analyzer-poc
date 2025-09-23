@@ -1,37 +1,26 @@
-# 📊 DuckDB Project Health
+# Repository Health Metrics
 
-A quick dashboard showing the health metrics for the DuckDB project.
-
-```sql project_health_data
-SELECT * FROM local_duckdb.project_health
+## Has there been at least one release within the last year?
+```sql releases
+SELECT * FROM 'check-releases';
 ```
 
-<BigValue
-data={project_health_data}
-value=total_releases
-label="Total Releases"
-/>
+## How many contributors have there been in the past 12 months?
+```sql contributors
+SELECT * FROM 'count-contributors';
+```
 
+## How many commits have there been in the past 12 months?
+```sql commits
+SELECT * FROM 'count-commits';
+```
 
-<BigValue
-data={project_health_data}
-value=total_open_pull_requests
-label="Total Open Pull Requests"
-/>
+## How many issues are currently open?
+```sql issues
+SELECT * FROM 'count-open-issues';
+```
 
-<BigValue
-data={project_health_data}
-value=total_forks
-label="Total Forks"
-/>
-
-<BigValue
-data={project_health_data}
-value=total_stargazers
-label="Total Stargazers"
-fmt=num0
-comparisonDelta=true
-downIsGood=true
-neutralMin=10000
-neutralMax=20000
-/>
+## General Quality Checks
+```sql verify
+SELECT * FROM 'verify-repository';
+```

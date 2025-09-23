@@ -15,6 +15,16 @@ spec:
         path: ./.local/node_modules
         type: Directory
         selinuxRelabel: "shared"
+    - name: sql-queries # TODO: move this out of .local
+      hostPath:
+        path: ./.local/sql-queries
+        type: Directory
+        selinuxRelabel: "shared"
+    - name: pages
+      hostPath:
+        path: ./pages
+        type: Directory
+        selinuxRelabel: "shared"
   containers:
     - name: evidence-app
       image: evidencedev/devenv:latest
@@ -29,6 +39,11 @@ spec:
           name: sources-data
         - mountPath: /evidence-workspace/node_modules
           name: node_modules
+        - mountPath: /sql-queries
+          name: sql-queries
+        - mountPath: /pages
+          name: pages
       workingDir: /evidence-workspace
       command: ["/bin/bash"]
-      args: ["-c", "set -x && npx degit evidence-dev/template . --force && npm install --force && ln -sf /sources /evidence-workspace/sources && npm run sources && npm run dev -- --host 0.0.0.0"]
+      # npm install --force overwrites a bunch of folders, that's why we're playing around with symlinks to circumvent this
+      args: ["-c", "set -x && npx degit evidence-dev/template . --force && npm install --force && ln -sf /sources /evidence-workspace/sources && cp /sql-queries/* /sources/ && rm -rf /evidence-workspace/pages && ln -sf /pages /evidence-workspace/pages && npm run sources && npm run dev -- --host 0.0.0.0"]
