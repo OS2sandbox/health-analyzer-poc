@@ -14,7 +14,6 @@ spec:
           mountPath: /app/output
         - name: token-volume
           mountPath: /app/token.txt
-          subPath: token.txt
       resources: {}
   containers:
     - name: duckdb-importer
@@ -31,7 +30,6 @@ spec:
           mountPath: /metrics
         - name: sql-volume
           mountPath: /app/pipeline.sql
-          subPath: pipeline.sql
       resources: {}
   restartPolicy: Never
   volumes:
