@@ -1,3 +1,0 @@
-{
-  "query": "query { repository(owner: \"duckdb\", name: \"duckdb\") { name issues(states: OPEN) { totalCount } pullRequests(states: OPEN) { totalCount } stargazers { totalCount } forks { totalCount } releases { totalCount } } }"
-}

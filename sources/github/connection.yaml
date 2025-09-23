@@ -1,3 +1,0 @@
-name: local_duckdb
-type: duckdb
-database: 'project_data.duckdb'
