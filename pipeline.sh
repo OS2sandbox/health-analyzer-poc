@@ -12,4 +12,4 @@ podman run --rm -it --name duckdb-importer \
   -v "$(pwd)"/.local/raw_data:/raw_data \
   -v "$(pwd)"/.local/metrics:/metrics \
   -v "$(pwd)"/pipeline.sql:/app/pipeline.sql \
-  docker.io/duckdb/duckdb duckdb /metrics/project_health.db -init /app/pipeline.sql
+  docker.io/duckdb/duckdb duckdb /metrics/project_health.db -f /app/pipeline.sql
