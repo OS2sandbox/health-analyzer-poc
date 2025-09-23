@@ -11,10 +11,10 @@ podman run --rm \
 podman run --rm -it --name duckdb-importer -v "$(pwd)"/.local/raw_data:/raw_data -v "$(pwd)"/.local/metrics:/metrics docker.io/duckdb/duckdb duckdb /metrics/project_health.db -c "
   INSTALL json; 
   LOAD json; 
-  CREATE OR REPLACE TABLE commits AS SELECT * FROM read_json_auto('/raw_data/commits.jsonl');
-  CREATE OR REPLACE TABLE license AS SELECT * FROM read_json_auto('/raw_data/license.jsonl');
-  CREATE OR REPLACE TABLE contributors AS SELECT * FROM read_json_auto('/raw_data/contributors.jsonl');
-  CREATE OR REPLACE TABLE releases AS SELECT * FROM read_json_auto('/raw_data/releases.jsonl');
-  CREATE OR REPLACE TABLE issues AS SELECT * FROM read_json_auto('/raw_data/issues.jsonl');
-  CREATE OR REPLACE TABLE root_md_files AS SELECT * FROM read_json_auto('/raw_data/root_md_files.jsonl');
+  CREATE OR REPLACE TABLE raw_commits AS SELECT * FROM read_json_auto('/raw_data/commits.jsonl');
+  CREATE OR REPLACE TABLE raw_license AS SELECT * FROM read_json_auto('/raw_data/license.jsonl');
+  CREATE OR REPLACE TABLE raw_contributors AS SELECT * FROM read_json_auto('/raw_data/contributors.jsonl');
+  CREATE OR REPLACE TABLE raw_releases AS SELECT * FROM read_json_auto('/raw_data/releases.jsonl');
+  CREATE OR REPLACE TABLE raw_issues AS SELECT * FROM read_json_auto('/raw_data/issues.jsonl');
+  CREATE OR REPLACE TABLE raw_root_md_files AS SELECT * FROM read_json_auto('/raw_data/root_md_files.jsonl');
 "
