@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-health-pipeline
+spec:
+  volumes:
+    - name: raw-data-volume
+      hostPath:
+        path: ./.local/raw_data
+        type: Directory
+    - name: metrics-volume
+      hostPath:
+        path: ./.local/metrics
+        type: Directory
+    - name: token-volume
+      hostPath:
+        path: ./.token
+        type: File
+    - name: sql-volume
+      hostPath:
+        path: ./pipeline.sql
+        type: File
+  containers:
+    - name: health-analyzer
+      image: codeberg.org/0xf1e/project-health-analyzer:latest
+      env:
+        - name: GITHUB_TOKEN_FILE
+          value: /app/token.txt
+      volumeMounts:
+        - name: raw-data-volume
+          mountPath: /app/output
+        - name: token-volume
+          mountPath: /app/token.txt
+          subPath: token.txt
+      resources: {}
+    - name: duckdb-importer
+      image: docker.io/duckdb/duckdb
+      command:
+        - duckdb
+        - /metrics/project_health.db
+        - -f
+        - /app/pipeline.sql
+      volumeMounts:
+        - name: raw-data-volume
+          mountPath: /raw_data
+        - name: metrics-volume
+          mountPath: /metrics
+        - name: sql-volume
+          mountPath: /app/pipeline.sql
+          subPath: pipeline.sql
+      resources: {}
+  restartPolicy: Never
