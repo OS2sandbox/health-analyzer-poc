@@ -20,7 +20,7 @@ spec:
       hostPath:
         path: ./pipeline.sql
         type: File
-  containers:
+  initContainers:
     - name: health-analyzer
       image: codeberg.org/0xf1e/project-health-analyzer:latest
       env:
@@ -33,6 +33,7 @@ spec:
           mountPath: /app/token.txt
           subPath: token.txt
       resources: {}
+  containers:
     - name: duckdb-importer
       image: docker.io/duckdb/duckdb
       command:
