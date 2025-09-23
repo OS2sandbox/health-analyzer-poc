@@ -55,13 +55,9 @@ spec:
   restartPolicy: Never
   volumes:
     - name: raw-data-volume
-      hostPath:
-        path: ./.local/raw_data
-        type: Directory
+      emptyDir: {}
     - name: metrics-volume
-      hostPath:
-        path: ./.local/metrics
-        type: Directory
+      emptyDir: {}
     - name: token-volume
       hostPath:
         path: ./.token
