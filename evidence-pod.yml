@@ -1,0 +1,34 @@
+# evidence-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: evidence-pod
+spec:
+  volumes:
+    - name: sources-data
+      hostPath:
+        path: ./.local/metrics
+        type: Directory
+        selinuxRelabel: "shared"
+    - name: node_modules
+      hostPath:
+        path: ./.local/node_modules
+        type: Directory
+        selinuxRelabel: "shared"
+  containers:
+    - name: evidence-app
+      image: evidencedev/devenv:latest
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      ports:
+        - containerPort: 3000
+          hostPort: 3000
+      volumeMounts:
+        - mountPath: /sources
+          name: sources-data
+        - mountPath: /evidence-workspace/node_modules
+          name: node_modules
+      workingDir: /evidence-workspace
+      command: ["/bin/bash"]
+      args: ["-c", "set -x && npx degit evidence-dev/template . --force && npm install --force && ln -sf /sources /evidence-workspace/sources && npm run sources && npm run dev -- --host 0.0.0.0"]
