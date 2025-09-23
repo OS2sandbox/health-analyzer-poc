@@ -3,23 +3,6 @@ kind: Pod
 metadata:
   name: project-health-pipeline
 spec:
-  volumes:
-    - name: raw-data-volume
-      hostPath:
-        path: ./.local/raw_data
-        type: Directory
-    - name: metrics-volume
-      hostPath:
-        path: ./.local/metrics
-        type: Directory
-    - name: token-volume
-      hostPath:
-        path: ./.token
-        type: File
-    - name: sql-volume
-      hostPath:
-        path: ./pipeline.sql
-        type: File
   initContainers:
     - name: health-analyzer
       image: codeberg.org/0xf1e/project-health-analyzer:latest
@@ -51,3 +34,20 @@ spec:
           subPath: pipeline.sql
       resources: {}
   restartPolicy: Never
+  volumes:
+    - name: raw-data-volume
+      hostPath:
+        path: ./.local/raw_data
+        type: Directory
+    - name: metrics-volume
+      hostPath:
+        path: ./.local/metrics
+        type: Directory
+    - name: token-volume
+      hostPath:
+        path: ./.token
+        type: File
+    - name: sql-volume
+      hostPath:
+        path: ./pipeline.sql
+        type: File
