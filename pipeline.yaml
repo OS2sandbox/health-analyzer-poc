@@ -15,7 +15,6 @@ spec:
         - name: token-volume
           mountPath: /app/token.txt
       resources: {}
-  containers:
     - name: duckdb-importer
       image: docker.io/duckdb/duckdb
       command:
@@ -30,6 +29,12 @@ spec:
           mountPath: /metrics
         - name: sql-volume
           mountPath: /app/pipeline.sql
+      resources: {}
+  containers:
+    - name: todo
+      image: nginx:latest
+      ports:
+        - containerPort: 80
       resources: {}
   restartPolicy: Never
   volumes:
