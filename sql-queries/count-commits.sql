@@ -8,6 +8,6 @@ SELECT
     END AS commits_category,
     COUNT(*) > 2 AS is_above_threshold
 FROM raw_commits 
-WHERE date >= datetime('now', '-1 year')
+WHERE date >= CURRENT_DATE - INTERVAL '1 year'
 GROUP BY strftime('%Y-%m', date)
 ORDER BY month;

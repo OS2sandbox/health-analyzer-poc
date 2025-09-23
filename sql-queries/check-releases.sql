@@ -6,4 +6,4 @@ SELECT
     END AS has_release_within_last_year,
     COUNT(*) > 0 AS has_release_within_last_year_bool
 FROM raw_releases 
-WHERE publishedAt >= datetime('now', '-1 year');
+WHERE publishedAt >= CURRENT_DATE - INTERVAL '1 year';

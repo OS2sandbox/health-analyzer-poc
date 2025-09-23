@@ -7,4 +7,4 @@ SELECT
     END AS contributor_category,
     COUNT(DISTINCT login) > 3 AS is_above_threshold
 FROM raw_contributors 
-WHERE last_contribution >= datetime('now', '-1 year');
+WHERE last_contribution >= CURRENT_DATE - INTERVAL '1 year';
