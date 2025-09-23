@@ -2,3 +2,17 @@
 .token
 .local
 .aider*
+.evidence/template
+.svelte-kit
+build
+node_modules
+.DS_Store
+static/data
+*.options.yaml
+.vscode/settings.json
+.evidence/meta
+.npm/
+.npm-cache/
+npm-debug.log*
+.vite/
+.evidence/temp/
