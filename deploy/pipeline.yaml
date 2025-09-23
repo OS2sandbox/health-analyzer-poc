@@ -9,11 +9,15 @@ spec:
       env:
         - name: GITHUB_TOKEN_FILE
           value: /app/token.txt
+        - name: CONFIG_FILE
+          value: /app/config/config.yaml
       volumeMounts:
         - name: raw-data-volume
           mountPath: /app/output
         - name: token-volume
           mountPath: /app/token.txt
+        - name: config-volume
+          mountPath: /app/config
       resources: {}
     - name: duckdb-importer
       image: docker.io/duckdb/duckdb
@@ -62,6 +66,10 @@ spec:
       hostPath:
         path: ./.token
         type: File
+    - name: config-volume
+      hostPath:
+        path: ./config
+        type: Directory
     - name: sql-volume
       hostPath:
         path: ./deploy/pipeline.sql
