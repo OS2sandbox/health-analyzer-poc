@@ -2,6 +2,7 @@ repo:
   owner: "duckdb"
   name: "duckdb-wasm"
 
+# do not change this section when using the deploy tools!
 output:
   directory: "output"
   root_md_files: "root_md_files.jsonl"

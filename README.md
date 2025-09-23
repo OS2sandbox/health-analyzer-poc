@@ -1,3 +1,21 @@
+To run the all-in-one deployment:
+
+```sh
+mkdir -p .local/node_modules
+echo $YOUR_GITHUB_TOKEN > .token
+podman kube play deploy/pipeline.yaml
+```
+
+The app will be deployed on https://localhost:3000
+
+Both aggregated data and raw data is available to the evidence.dev app, and can be used by manipulating `deploy/pages/index.md`. This way, a visual representation of the data can be created.  
+Changes to this file will caused the app to update at run-time.
+
+By default, the app will monitor the repository at `https://github.com/duckdb/duckdb-wasm`. The time required to fetch repository data will increase linearly with the amount of releases, contributors, commits, etc.  
+To configure the collected information, change the values in `config/config.yaml`.
+
+---
+
 # GitHub Repository Metrics Collector
 
 This project collects various metrics from GitHub repositories using the GitHub GraphQL API and outputs them as JSONL files. It's designed to help analyze repository activity, contributors, issues, and other key metrics.
