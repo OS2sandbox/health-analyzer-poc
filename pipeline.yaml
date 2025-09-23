@@ -33,9 +33,6 @@ spec:
   containers:
     - name: todo
       image: nginx:latest
-      ports:
-        - containerPort: 80
-      resources: {}
   restartPolicy: Never
   volumes:
     - name: raw-data-volume
