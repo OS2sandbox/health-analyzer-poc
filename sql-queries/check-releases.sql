@@ -3,6 +3,7 @@ SELECT
     CASE 
         WHEN COUNT(*) > 0 THEN 'yes' 
         ELSE 'no' 
-    END AS has_release_within_last_year
+    END AS has_release_within_last_year,
+    COUNT(*) > 0 AS has_release_within_last_year_bool
 FROM raw_releases 
 WHERE publishedAt >= datetime('now', '-1 year');

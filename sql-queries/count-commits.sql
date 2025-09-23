@@ -5,7 +5,8 @@ SELECT
     CASE 
         WHEN COUNT(*) > 2 THEN 'above 2' 
         ELSE 'below 2' 
-    END AS commits_category
+    END AS commits_category,
+    COUNT(*) > 2 AS is_above_threshold
 FROM raw_commits 
 WHERE date >= datetime('now', '-1 year')
 GROUP BY strftime('%Y-%m', date)

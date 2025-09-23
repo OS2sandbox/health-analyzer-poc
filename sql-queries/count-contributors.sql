@@ -4,6 +4,7 @@ SELECT
     CASE 
         WHEN COUNT(DISTINCT login) > 3 THEN 'above 3' 
         ELSE 'below 3' 
-    END AS contributor_category
+    END AS contributor_category,
+    COUNT(DISTINCT login) > 3 AS is_above_threshold
 FROM raw_contributors 
 WHERE last_contribution >= datetime('now', '-1 year');
