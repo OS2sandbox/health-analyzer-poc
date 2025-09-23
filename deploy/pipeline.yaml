@@ -68,7 +68,7 @@ spec:
         type: File
     - name: sql-volume
       hostPath:
-        path: ./pipeline.sql
+        path: ./deploy/pipeline.sql
         type: File
     - name: node-modules-volume
       hostPath:
@@ -76,7 +76,7 @@ spec:
         type: Directory
     - name: sql-queries-volume
       hostPath:
-        path: ./.local/sql-queries
+        path: ./deploy/sql-queries
         type: Directory
     - name: pages-volume
       hostPath:
