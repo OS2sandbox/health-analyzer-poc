@@ -1,0 +1,4 @@
+name: project_health
+type: duckdb
+options:
+  filename: project_health.db
