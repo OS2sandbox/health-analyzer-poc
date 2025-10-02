@@ -15,7 +15,7 @@ flowchart LR
 
   class H,S,R card
 ```
-## 🛤️ Two Ways to build and run the Health Analyzer PoC
+## 🛤️ Three Ways to build and run the Health Analyzer PoC
 
 The analyzer can be built to support two separate operational modes:
 
