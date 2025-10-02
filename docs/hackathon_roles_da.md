@@ -1,4 +1,4 @@
-## Roller i Hackathonet
+## Roller i Mikro-Hackathonet
 
 For at gøre det nemt og trygt for alle deltagere og arrangører, har vi opdelt opgaverne i overskuelige roller. Man behøver ikke være ekspert – det vigtigste er at samarbejde og lære undervejs.
 
@@ -83,3 +83,30 @@ For at gøre det nemt og trygt for alle deltagere og arrangører, har vi opdelt 
 - SQL (grundlæggende forespørgsler)  
 - Visualisering og datastorytelling  
 - Evidence-baseret præsentation
+
+---
+
+## Teknologier og dokumentation
+
+Dette mikro-hackathon forudsætter, at deltagerne har praktisk erfaring med følgende værktøjer og teknologier. Herunder finder du links til den officielle dokumentation, som kan bruges til opslagsværk og forberedelse.
+
+### Platform og automation
+
+- [GitHub Actions](https://docs.github.com/en/actions) – CI/CD workflows med YAML
+- [YAML](https://yaml.org/) – Konfigurationssprog til bl.a. GitHub Actions og Meltano
+- [OCI Containerfile-specifikation](https://specs.opencontainers.org/image-spec/) – Standard for container image format
+
+### Data pipeline og integration
+
+- [Meltano](https://docs.meltano.com/) – Workflow-motor til ELT
+- [Singer](https://www.singer.io/) – Specifikation for taps og targets
+- [Singer tap-github (GitHub)](https://github.com/singer-io/tap-github) – Tap til GitHub API via Singer
+- [Meltano tap-github (Meltano Hub)](https://hub.meltano.com/extractors/tap-github/) – Tap til GitHub API via Meltano
+- [dbt](https://docs.getdbt.com/) – Datamodellering og transformationer
+- [SQLite](https://sqlite.org/docs.html) – Letvægts database til lokal datalagring
+- [GitHub REST API](https://docs.github.com/en/rest) – Dataudtræk og integration
+
+### Dokumentation og præsentation
+
+- [Markdown](https://www.markdownguide.org/) – Dokumentation og præsentation
+- [Evidence](https://docs.evidence.dev/) – Data storytelling og visualisering
