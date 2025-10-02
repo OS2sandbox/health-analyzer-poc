@@ -31,6 +31,10 @@ The analyzer can be built to support two separate operational modes:
 - ⚡ **Fast, lightweight, and auditable** – ideal for evaluations where speed, traceability, and zero operational overhead are key.
 - 🏅 **Standards-ready** – can be extended to support [OpenCode Badges](https://opencode.de/deorting.
 
+### 3. **Hybrid-mode with added analytics **
+- 📈 **Continuous monitoring** + 🧠 **BI as code** +  📊 **Business insights and analytics**
+- 🏬 **Persistent database and Open Source analytics** (requires hosting and thus recurring hosting fees and an operations team)
+- ♾️ **Point and Click based analytics** requires onboarding and training in Apache Superset
 
 ---
 
