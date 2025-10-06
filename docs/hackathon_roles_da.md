@@ -1,6 +1,6 @@
 ## Roller i Mikro-Hackathonet
 
-For at gøre det nemt og trygt for alle deltagere og arrangører, har vi opdelt opgaverne i overskuelige roller. Man behøver ikke være ekspert – det vigtigste er at samarbejde og lære undervejs.
+For at gøre det nemt og trygt for alle deltagere og arrangører, har vi herunder opdelt opgaverne i overskuelige roller.
 
 ---
 
