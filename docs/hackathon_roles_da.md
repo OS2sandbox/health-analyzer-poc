@@ -1,6 +1,6 @@
 ## Roller i Mikro-Hackathonet
 
-For at gøre det nemt og trygt for alle deltagere og arrangører, har vi herunder opdelt opgaverne i overskuelige roller.
+_For at gøre det nemt og trygt for alle deltagere og arrangører, har vi herunder opdelt opgaverne i overskuelige roller._
 
 ---
 
