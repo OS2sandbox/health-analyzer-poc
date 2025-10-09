@@ -1,0 +1,17 @@
+repo:
+  owner: "duckdb"
+  name: "duckdb-wasm"
+
+output:
+  directory: "output"
+  root_md_files: "root_md_files.jsonl"
+  license: "license.jsonl"
+  releases: "releases.jsonl"
+  contributors: "contributors.jsonl"
+  commits: "commits.jsonl"
+  issues: "issues.jsonl"
+
+github_api_url: "https://api.github.com/graphql"
+pagination_limit: 100
+date_range_days: 365
+request_timeout: 30
