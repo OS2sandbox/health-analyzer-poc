@@ -15,6 +15,10 @@ flowchart LR
 
   class H,S,R card
 ```
+
+## Architecutral proposal
+🇩🇰 [Danish proposal document](https://janhalen.github.io/enterprise-architecture-patterns/proposals/2025-10-02-health-analyzer.html)
+
 ## 🛤️ Three Ways to build and run the Health Analyzer PoC
 
 The analyzer can be built to support two separate operational modes:
