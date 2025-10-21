@@ -23,22 +23,22 @@ flowchart LR
 
 The analyzer can be built to support two separate operational modes:
 
-### 1. **Full-Stack**
+### 1. Full-Stack
 - 📈 **Continuous monitoring** using selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsach with a persistent database backend.
 - 🛠️ Requires infrastructure setup (e.g., storage, hosting) and ongoing maintenance.
 - ✅ Suitable for long-term observability and trend analysis.
 
-### 2. **Serverless BI**
+### 2. Serverless BI
 - 📊 **Business insights without infrastructure** – reports are generated on-demand using automated workflows (e.g., GitHub Actions), with no servers to manage.
 - 🔄 **Live data, reproducible results** – pulls fresh data from APIs like GitHub and transforms it into clear, shareable reports (Markdown or HTML).
 - 🧠 **BI as code** – analytics are version-controlled, transparent, and embedded directly in your project repository.
 - ⚡ **Fast, lightweight, and auditable** – ideal for evaluations where speed, traceability, and zero operational overhead are key.
 - 🏅 **Standards-ready** – can be extended to support [OpenCode Badges](https://opencode.de/deorting.
 
-### 3. **Hybrid-mode with added analytics **
+### 3. Hybrid-mode
 - 📈 **Continuous monitoring** + 🧠 **BI as code** +  📊 **Business insights and analytics**
 - 🏬 **Persistent database and Open Source analytics** (requires hosting and thus recurring hosting fees and an operations team)
-- ♾️ **Point and Click based analytics** requires onboarding and training in Apache Superset
+- ♾️ **Point and Click based analytics** requires onboarding and training in [Apache Superset](https://superset.apache.org/)
 
 ---
 
@@ -49,20 +49,6 @@ The analyzer can be built to support two separate operational modes:
 - 📊 **Dashboards** – (Full-stack mode only) Interactive views of project trends.
 - 🔍 **Search and rating** – of software solutions across forges.
 
----
-
-## 🛠️ Technology recommendations
-
-- **APIs**
-  - [GitHub API](https://docs.github.com/en/rest) – for retrieving repository data.
-  - GitLab API – for interacting with GitLab-hosted repositories.
-  - [Forgejo API](https://forgejo.org/docs/latesty data.
-
-- **Metrics & Visualization**
-  - CHAOSS metrics – for assessing open source community health.
-  - [8knot](https://eightl for visualizing CHAOSS metrics.
-  - [Evidence](https://github.com/e
-    
 ## 🤝 Contributing
 
 We welcome ideas, feedback, and suggestions!
