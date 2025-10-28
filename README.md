@@ -24,7 +24,7 @@ flowchart LR
 The analyzer can be built to support two separate operational modes:
 
 ### 1. Full-Stack
-- 📈 **Continuous monitoring** using selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metricsach with a persistent database backend.
+- 📈 **Continuous monitoring** using selected [CHAOSS metrics](https://chaoss.community/kbtopic/all-metrics/) with a persistent database backend.
 - 🛠️ Requires infrastructure setup (e.g., storage, hosting) and ongoing maintenance.
 - ✅ Suitable for long-term observability and trend analysis.
 
@@ -33,7 +33,7 @@ The analyzer can be built to support two separate operational modes:
 - 🔄 **Live data, reproducible results** – pulls fresh data from APIs like GitHub and transforms it into clear, shareable reports (Markdown or HTML).
 - 🧠 **BI as code** – analytics are version-controlled, transparent, and embedded directly in your project repository.
 - ⚡ **Fast, lightweight, and auditable** – ideal for evaluations where speed, traceability, and zero operational overhead are key.
-- 🏅 **Standards-ready** – can be extended to support [OpenCode Badges](https://opencode.de/deorting.
+- 🏅 **Standards-ready** – can be extended to support [OpenCode Badges](https://opencode.de/deorting).
 
 ### 3. Hybrid-mode
 - 📈 **Continuous monitoring** + 🧠 **BI as code** +  📊 **Business insights and analytics**
