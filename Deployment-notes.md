@@ -23,4 +23,4 @@ This single line tells the container to perform three separate actions, one afte
 
 To create a database file from a .json file (resulting data from an API query), use the following command:
 
-`podman run --rm -it --name duckdb-importer -v "$(pwd)":/data docker.io/duckdb/duckdb -c "INSTALL json; LOAD json; CREATE OR REPLACE TABLE project_health AS SELECT * FROM read_json_auto('/data/project_health.json');"`
+`podman run --rm -it --name duckdb-importer -v "$(pwd)":/data docker.io/duckdb/duckdb duckdb /data/project_health.db -c "INSTALL json; LOAD json; CREATE OR REPLACE TABLE project_health AS SELECT * FROM read_json_auto('/data/project_health.json');"`
