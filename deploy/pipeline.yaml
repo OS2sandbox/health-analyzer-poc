@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-health-pipeline
+spec:
+  initContainers:
+    - name: health-analyzer
+      image: codeberg.org/0xf1e/project-health-analyzer:latest
+      env:
+        - name: GITHUB_TOKEN_FILE
+          value: /app/token.txt
+        - name: CONFIG_FILE
+          value: /app/config/config.yaml
+      volumeMounts:
+        - name: raw-data-volume
+          mountPath: /app/output
+        - name: token-volume
+          mountPath: /app/token.txt
+        - name: config-volume
+          mountPath: /app/config
+      resources: {}
+    - name: duckdb-importer
+      image: docker.io/duckdb/duckdb
+      command:
+        - duckdb
+        - /metrics/project_health.db
+        - -f
+        - /app/pipeline.sql
+      volumeMounts:
+        - name: raw-data-volume
+          mountPath: /raw_data
+        - name: metrics-volume
+          mountPath: /metrics
+        - name: sql-volume
+          mountPath: /app/pipeline.sql
+      resources: {}
+  containers:
+    - name: evidence-app
+      image: evidencedev/devenv:latest
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      ports:
+        - containerPort: 3000
+          hostPort: 3000
+      volumeMounts:
+        - mountPath: /sources
+          name: metrics-volume
+        - mountPath: /evidence-workspace/node_modules
+          name: node-modules-volume
+        - mountPath: /sql-queries
+          name: sql-queries-volume
+        - mountPath: /pages
+          name: pages-volume
+      workingDir: /evidence-workspace
+      command: ["/bin/bash"]
+      # npm install --force overwrites a bunch of folders, that's why we're playing around with symlinks to circumvent this
+      args: ["-c", "set -x && npx degit evidence-dev/template . --force && npm install --force && ln -sf /sources /evidence-workspace/sources && cp /sql-queries/* /sources/ && rm -rf /evidence-workspace/pages && ln -sf /pages /evidence-workspace/pages && npm run sources && npm run dev -- --host 0.0.0.0"]
+  restartPolicy: Never
+  volumes:
+    - name: raw-data-volume
+      emptyDir: {}
+    - name: metrics-volume
+      emptyDir: {}
+    - name: token-volume
+      hostPath:
+        path: ./.token
+        type: File
+    - name: config-volume
+      hostPath:
+        path: ./config
+        type: Directory
+    - name: sql-volume
+      hostPath:
+        path: ./deploy/pipeline.sql
+        type: File
+    - name: node-modules-volume
+      hostPath:
+        path: ./.local/node_modules
+        type: Directory
+    - name: sql-queries-volume
+      hostPath:
+        path: ./deploy/sql-queries
+        type: Directory
+    - name: pages-volume
+      hostPath:
+        path: ./deploy/pages
+        type: Directory
